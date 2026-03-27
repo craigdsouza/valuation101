@@ -15,12 +15,15 @@ The approach comes from Aswath Damodaran's [fcffsimpleginzu spreadsheet](https:/
 
 ## The valuation equation
 
-$$V_{firm} = \sum_{t=1}^{10} \frac{FCFF_t}{(1 + WACC)^t} + \frac{FCFF_{11} / (WACC_{stable} - g_{stable})}{(1 + WACC)^{10}}$$
+```
+V(firm) = Σ [ FCFF(t) / (1 + WACC)^t ] + Terminal Value / (1 + WACC)^10
+           t=1..10
+```
 
 Where:
-- $FCFF_t$ = Free Cash Flow to Firm in year $t$
-- $WACC$ = Weighted Average Cost of Capital
-- $g_{stable}$ = Stable growth rate (typically the risk-free rate)
+- **FCFF(t)** = Free Cash Flow to Firm in year t
+- **WACC** = Weighted Average Cost of Capital
+- **g(stable)** = Stable growth rate (typically the risk-free rate)
 
 ## From firm value to equity value
 

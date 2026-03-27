@@ -24,10 +24,14 @@ Builds WACC from first principles in 5 stages:
 ### Stage 1: Beta
 Start with an **unlevered beta** from Damodaran's industry averages, then re-lever for the company's capital structure:
 
-$$\beta_{levered} = \beta_{unlevered} \times [1 + (1 - t) \times (D/E)]$$
+```
+β(levered) = β(unlevered) × [1 + (1 − t) × (D/E)]
+```
 
 ### Stage 2: Cost of Equity (CAPM)
-$$Cost\ of\ Equity = r_f + \beta \times ERP$$
+```
+Cost of Equity = Risk-free rate + β × ERP
+```
 
 Four ERP sources available: manual input, country of incorporation, operating regions, or implied.
 
@@ -46,7 +50,9 @@ Market-value weights:
 - Debt = book value of debt (approximation for market value)
 
 ### Stage 5: WACC
-$$WACC = \frac{E}{E+D} \times r_e + \frac{D}{E+D} \times r_d \times (1-t)$$
+```
+WACC = (E / (E+D)) × r(e) + (D / (E+D)) × r(d) × (1 − t)
+```
 
 ## Method 2: Industry Average
 
