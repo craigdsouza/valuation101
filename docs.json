@@ -12,113 +12,117 @@
     "dark": "/logo/dark.svg"
   },
   "favicon": "/favicon.svg",
-  "tabs": [
-    {
-      "id": "docs",
-      "name": "Documentation",
-      "url": "docs"
-    },
-    {
-      "id": "skills",
-      "name": "Skills Reference",
-      "url": "skills"
-    },
-    {
-      "id": "lib",
-      "name": "Python Library",
-      "url": "lib"
-    }
-  ],
   "navigation": {
-    "docs": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "docs/introduction",
-          "docs/getting-started",
-          "docs/how-it-works"
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "docs/introduction",
+              "docs/getting-started",
+              "docs/how-it-works"
+            ]
+          },
+          {
+            "group": "Deep Dives",
+            "pages": [
+              "docs/data-pipeline",
+              "docs/methodology",
+              "docs/interpreting-results"
+            ]
+          },
+          {
+            "group": "Modes",
+            "pages": [
+              "docs/expert-mode",
+              "docs/novice-mode",
+              "docs/feeling-lucky"
+            ]
+          }
         ]
       },
       {
-        "group": "Deep Dives",
-        "pages": [
-          "docs/data-pipeline",
-          "docs/methodology",
-          "docs/interpreting-results"
+        "tab": "Skills Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "skills/overview"
+            ]
+          },
+          {
+            "group": "Data Collection",
+            "pages": [
+              "skills/company-identifier",
+              "skills/identify-required-statements",
+              "skills/pull-raw-data",
+              "skills/parse-raw-data-to-filings",
+              "skills/last-twelve-months",
+              "skills/last-10-k"
+            ]
+          },
+          {
+            "group": "Valuation Engine",
+            "pages": [
+              "skills/cost-of-capital",
+              "skills/growth-and-profitability",
+              "skills/fcff-model"
+            ]
+          },
+          {
+            "group": "Adjustments",
+            "pages": [
+              "skills/r-and-d-converter",
+              "skills/lease-converter",
+              "skills/employee-options",
+              "skills/failure-rate"
+            ]
+          },
+          {
+            "group": "Orchestrator & Output",
+            "pages": [
+              "skills/fcff",
+              "skills/diagnostics",
+              "skills/valuation-report"
+            ]
+          }
         ]
       },
       {
-        "group": "Modes",
-        "pages": [
-          "docs/expert-mode",
-          "docs/novice-mode",
-          "docs/feeling-lucky"
+        "tab": "Python Library",
+        "groups": [
+          {
+            "group": "Python Library",
+            "pages": [
+              "lib/overview",
+              "lib/dcf-engine",
+              "lib/cost-of-capital",
+              "lib/adjustments",
+              "lib/equity-bridge",
+              "lib/data-loader"
+            ]
+          }
         ]
       }
     ],
-    "skills": [
-      {
-        "group": "Overview",
-        "pages": [
-          "skills/overview"
-        ]
-      },
-      {
-        "group": "Data Collection",
-        "pages": [
-          "skills/company-identifier",
-          "skills/identify-required-statements",
-          "skills/pull-raw-data",
-          "skills/parse-raw-data-to-filings",
-          "skills/last-twelve-months",
-          "skills/last-10-k"
-        ]
-      },
-      {
-        "group": "Valuation Engine",
-        "pages": [
-          "skills/cost-of-capital",
-          "skills/growth-and-profitability",
-          "skills/fcff-model"
-        ]
-      },
-      {
-        "group": "Adjustments",
-        "pages": [
-          "skills/r-and-d-converter",
-          "skills/lease-converter",
-          "skills/employee-options",
-          "skills/failure-rate"
-        ]
-      },
-      {
-        "group": "Orchestrator & Output",
-        "pages": [
-          "skills/fcff",
-          "skills/diagnostics",
-          "skills/valuation-report"
-        ]
-      }
-    ],
-    "lib": [
-      {
-        "group": "Python Library",
-        "pages": [
-          "lib/overview",
-          "lib/dcf-engine",
-          "lib/cost-of-capital",
-          "lib/adjustments",
-          "lib/equity-bridge",
-          "lib/data-loader"
-        ]
-      }
-    ]
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Substack",
+          "href": "https://valuation101.substack.com",
+          "icon": "newspaper"
+        }
+      ]
+    }
   },
   "navbar": {
     "links": [
       {
         "label": "Substack",
-        "url": "https://valuation101.substack.com"
+        "href": "https://valuation101.substack.com"
       }
     ]
   },
@@ -129,12 +133,10 @@
     }
   },
   "contextual": {
-    "options": {
-      "claude": true,
-      "chatgpt": true
-    }
-  },
-  "seo": {
-    "indexHiddenPages": false
+    "options": [
+      "copy",
+      "chatgpt",
+      "claude"
+    ]
   }
 }
