@@ -2,20 +2,16 @@
 title: "Identify Required Statements"
 sidebarTitle: "Required Statements"
 description: "Determine which SEC filings (10-K and 10-Q) are needed for the DCF valuation based on the valuation date."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: identify-required-statements
 phase: 2
-inputs:
-  - Ticker
-  - Valuation date
-  - Fiscal year end date
-outputs:
-  - statements_required_{date}.json
-depends_on:
-  - company-identifier
-feeds_into:
-  - pull-raw-data
-  - parse-raw-data-to-filings
----
+inputs: [Ticker, Valuation date, Fiscal year end date]
+outputs: [statements_required_{date}.json]
+depends_on: [company-identifier]
+feeds_into: [pull-raw-data, parse-raw-data-to-filings]
+*/}
 
 ## What it does
 

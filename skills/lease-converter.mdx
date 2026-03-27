@@ -2,21 +2,16 @@
 title: "Lease Converter"
 sidebarTitle: "Lease Converter"
 description: "Convert operating lease commitments into debt equivalents, adjusting EBIT, debt, and invested capital."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: lease-converter
 phase: 5
-inputs:
-  - Operating lease commitments (from footnotes or ASC 842 disclosures)
-  - Pre-tax cost of debt
-outputs:
-  - Lease debt equivalent
-  - Adjusted EBIT (add back lease expense, subtract depreciation of lease asset)
-  - Adjusted total debt
-depends_on:
-  - last-twelve-months
-feeds_into:
-  - cost-of-capital
-  - fcff-model
----
+inputs: [operating lease commitments (from footnotes or ASC 842 disclosures), pre-tax cost of debt]
+outputs: [lease debt equivalent, adjusted EBIT (add back lease expense, subtract depreciation of lease asset), adjusted total debt]
+depends_on: [last-twelve-months]
+feeds_into: [cost-of-capital, fcff-model]
+*/}
 
 ## What it does
 

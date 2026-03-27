@@ -2,16 +2,16 @@
 title: "Diagnostics"
 sidebarTitle: "Diagnostics"
 description: "Run Damodaran's 6-step diagnostic checklist to sanity-check the valuation output."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: diagnostics
 phase: 7
-inputs:
-  - Completed valuation output (from fcff-model)
-outputs:
-  - 6-point diagnostic report with pass/warn/fail flags
-depends_on:
-  - fcff-model
+inputs: [completed valuation output (from fcff-model)]
+outputs: [6-point diagnostic report with pass/warn/fail flags]
+depends_on: [fcff-model]
 feeds_into: []
----
+*/}
 
 ## What it does
 

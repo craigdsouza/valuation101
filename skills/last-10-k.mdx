@@ -2,18 +2,16 @@
 title: "Last 10-K"
 sidebarTitle: "Last 10-K"
 description: "Extract financial data from the most recent annual 10-K filing for Damodaran's Input sheet column C."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: last-10-k
 phase: 4
-inputs:
-  - Primary 10-K _raw.json
-outputs:
-  - "last_10k_{date}.json mapped to Damodaran Input sheet cells C11–C20"
-depends_on:
-  - parse-raw-data-to-filings
-feeds_into:
-  - cost-of-capital
-  - fcff-model
----
+inputs: [Primary 10-K _raw.json]
+outputs: [last_10k_{date}.json mapped to Damodaran Input sheet cells C11–C20]
+depends_on: [parse-raw-data-to-filings]
+feeds_into: [cost-of-capital, fcff-model]
+*/}
 
 ## What it does
 

@@ -2,19 +2,16 @@
 title: "Last Twelve Months"
 sidebarTitle: "LTM"
 description: "Compute trailing-12-month financials from SEC filings for Damodaran's Input sheet column B."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: last-twelve-months
 phase: 4
-inputs:
-  - Per-filing _raw.json files (primary 10-K + bridge 10-Qs)
-outputs:
-  - "ltm_{date}.json mapped to Damodaran Input sheet cells B11–B23"
-depends_on:
-  - parse-raw-data-to-filings
-feeds_into:
-  - cost-of-capital
-  - growth-and-profitability
-  - fcff-model
----
+inputs: [Per-filing _raw.json files (primary 10-K + bridge 10-Qs)]
+outputs: [ltm_{date}.json mapped to Damodaran Input sheet cells B11–B23]
+depends_on: [parse-raw-data-to-filings]
+feeds_into: [cost-of-capital, growth-and-profitability, fcff-model]
+*/}
 
 ## What it does
 

@@ -2,18 +2,16 @@
 title: "Failure Rate"
 sidebarTitle: "Failure Rate"
 description: "Estimate the probability of corporate failure and adjust the intrinsic value accordingly."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: failure-rate
 phase: 6
-inputs:
-  - Bond rating (if rated) or company age
-outputs:
-  - Probability of failure (%)
-  - Adjusted value per share = DCF value × (1 − failure probability)
-depends_on:
-  - fcff-model
-feeds_into:
-  - fcff-model
----
+inputs: [bond rating (if rated) or company age]
+outputs: [probability of failure (%), adjusted value per share = DCF value × (1 − failure probability)]
+depends_on: [fcff-model]
+feeds_into: [fcff-model]
+*/}
 
 ## What it does
 

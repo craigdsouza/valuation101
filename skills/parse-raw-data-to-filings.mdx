@@ -2,22 +2,16 @@
 title: "Parse Raw Data to Filings"
 sidebarTitle: "Parse to Filings"
 description: "Transform the raw XBRL companyfacts.json into structured per-filing JSON files for downstream valuation skills."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: parse-raw-data-to-filings
 phase: 3
-inputs:
-  - companyfacts.json
-  - statements_required_{date}.json
-outputs:
-  - company-facts-keys.json (XBRL tag inventory)
-  - csv/{tag}.csv (one per relevant tag)
-  - "{form}_{period_end}_raw.json" (one per required filing)
-depends_on:
-  - pull-raw-data
-  - identify-required-statements
-feeds_into:
-  - last-twelve-months
-  - last-10-k
----
+inputs: [companyfacts.json, statements_required_{date}.json]
+outputs: [company-facts-keys.json (XBRL tag inventory), csv/{tag}.csv (one per relevant tag), {form}_{period_end}_raw.json (one per required filing)]
+depends_on: [pull-raw-data, identify-required-statements]
+feeds_into: [last-twelve-months, last-10-k]
+*/}
 
 ## What it does
 

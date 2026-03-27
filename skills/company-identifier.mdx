@@ -2,16 +2,16 @@
 title: "Company Identifier"
 sidebarTitle: "Company Identifier"
 description: "Resolve a company name or ticker to a confirmed identity with CIK, exchange, and sector."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: company-identifier
 phase: 1
-inputs:
-  - Company name or ticker symbol
-outputs:
-  - Confirmed company identity (legal name, ticker, CIK, exchange, sector)
+inputs: [Company name or ticker symbol]
+outputs: [Confirmed company identity (legal name, ticker, CIK, exchange, sector)]
 depends_on: []
-feeds_into:
-  - identify-required-statements
----
+feeds_into: [identify-required-statements]
+*/}
 
 ## What it does
 

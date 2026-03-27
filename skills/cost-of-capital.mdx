@@ -2,25 +2,16 @@
 title: "Cost of Capital"
 sidebarTitle: "Cost of Capital"
 description: "Compute the Weighted Average Cost of Capital (WACC) using Damodaran's three methods."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: cost-of-capital
 phase: 5
-inputs:
-  - LTM financial data
-  - Industry averages (beta, cost of capital)
-  - Risk-free rate
-  - Equity risk premium
-  - Bond rating or synthetic rating
-outputs:
-  - WACC (%) — detailed, industry average, and distribution
-  - Cost of equity (%)
-  - Cost of debt (%)
-  - Capital structure weights (debt/equity)
-depends_on:
-  - last-twelve-months
-  - last-10-k
-feeds_into:
-  - fcff-model
----
+inputs: [LTM financial data, industry averages (beta, cost of capital), risk-free rate, equity risk premium, bond rating or synthetic rating]
+outputs: [WACC (%) — detailed, industry average, and distribution, cost of equity (%), cost of debt (%), capital structure weights (debt/equity)]
+depends_on: [last-twelve-months, last-10-k]
+feeds_into: [fcff-model]
+*/}
 
 ## What it does
 

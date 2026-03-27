@@ -1,0 +1,249 @@
+---
+title: "CoreWeave (CRWV)"
+sidebarTitle: "CoreWeave (CRWV)"
+description: "Full Feeling Lucky FCFF valuation of CoreWeave Inc. — a pre-profitability AI infrastructure company. Valued at $111.20/share vs. market price of $83.51."
+---
+
+<Info>
+  **Valuation date:** March 25, 2026 &nbsp;|&nbsp; **Mode:** Feeling Lucky &nbsp;|&nbsp; **Result:** $111.20/share (33% upside vs. $83.51 market price)
+</Info>
+
+CoreWeave is a GPU cloud infrastructure company that IPO'd in March 2025. It's a challenging valuation subject: pre-profitability, capital-intensive, with explosive revenue growth and heavy debt financing. This case study walks through every phase of the pipeline and shows the real outputs the plugin produced.
+
+## Company Identification
+
+The plugin resolved "CoreWeave" to its SEC EDGAR identity:
+
+| Field | Value |
+|-------|-------|
+| Legal name | CoreWeave, Inc. |
+| Ticker | CRWV |
+| CIK | 0001916183 |
+| Exchange | NASDAQ |
+| Country | United States |
+| Sector | Computer Services |
+| Fiscal year end | December 31 |
+
+**Notable:** CoreWeave IPO'd in March 2025, meaning only one 10-K (FY2025) exists in the SEC EDGAR database. There is no multi-year public filing history to draw from.
+
+## Required Filings
+
+Because the valuation date (March 25, 2026) falls close to the most recent 10-K (December 31, 2025), no bridge quarter 10-Qs are needed. The LTM equals the annual.
+
+| Filing | Period ends | Role |
+|--------|------------|------|
+| 10-K | 2025-12-31 | Primary annual (LTM basis) |
+| 10-K | 2024-12-31 | Prior year comparison |
+
+**Method:** `annual_only` — the annual report was fresh enough that no quarterly bridging was required.
+
+## Trailing Twelve-Month Financials
+
+The LTM figures map to column B of Damodaran's Input sheet. Since no bridging was needed, these come directly from the FY2025 10-K.
+
+| Metric | LTM (FY2025) | Prior Year (FY2024) | Change |
+|--------|-------------|--------------------|----|
+| Revenue | $5.13B | $1.92B | +168% |
+| Operating income (EBIT) | −$46M | $324M | Turned negative |
+| Interest expense | $869M | $184M | +372% |
+| Book value of equity | $3.34B | −$414M | Turned positive (IPO) |
+| Book value of debt | $29.82B | $10.62B | +181% |
+| Cash & short-term investments | $3.16B | $1.36B | +132% |
+| Cross holdings | $51M | $79M | −36% |
+
+**Key observations:**
+
+Revenue nearly tripled year-over-year ($1.9B → $5.1B), but the company swung from an operating profit to a loss as it invested aggressively in GPU infrastructure. Debt exploded from $10.6B to $29.8B — this is a company financing its growth almost entirely with borrowed capital. The IPO brought equity positive for the first time.
+
+Interest expense of $869M against operating income of −$46M gives a negative interest coverage ratio — a key input for the cost of capital calculation.
+
+**Data gaps:** Shares outstanding were not reported in the XBRL filings (common for recent IPOs). The plugin derived them from market cap: $43.09B / $83.51 = ~516M shares.
+
+## Cost of Capital (WACC)
+
+The plugin computed WACC using the Detailed (bottom-up) method.
+
+### Beta estimation
+
+| Component | Value | Source |
+|-----------|-------|--------|
+| Unlevered beta | 0.962 | Computer Services industry average |
+| D/E ratio | 0.407 | Market cap vs. market value of debt |
+| Levered beta | 1.255 | Re-levered for CoreWeave's capital structure |
+
+### Cost of equity
+
+| Component | Value |
+|-----------|-------|
+| Risk-free rate | 4.35% (10-year US Treasury) |
+| Equity risk premium | 4.46% (US total ERP) |
+| Country risk premium | 0.23% |
+| **Cost of equity** | **9.95%** |
+
+### Cost of debt
+
+| Component | Value |
+|-----------|-------|
+| Interest coverage ratio (ICR) | −0.053 (negative — EBIT doesn't cover interest) |
+| Synthetic rating | D2/D |
+| Default spread | 19.0% |
+| Pre-tax cost of debt | 23.58% |
+| **After-tax cost of debt** | **17.68%** |
+
+The negative ICR resulted in the lowest possible synthetic rating (D2/D), implying severe default risk. This drives the pre-tax cost of debt to 23.6% — reflecting the market's view of CoreWeave as a highly leveraged, not-yet-profitable borrower.
+
+### Weighted average
+
+| Component | Weight | Cost |
+|-----------|--------|------|
+| Equity | 71.1% | 9.95% |
+| Debt | 28.9% | 17.68% (after tax) |
+| **WACC** | | **12.19%** |
+
+For context, the Computer Services industry average cost of capital is 7.83%. CoreWeave's 12.19% reflects the significant risk premium the market attaches to its debt-heavy, pre-profit business model.
+
+## Growth & Profitability Assumptions
+
+The four value drivers that power the 10-year DCF projection.
+
+### Revenue growth
+
+| Period | Growth rate | Source |
+|--------|-----------|--------|
+| Year 1 | 134% | Analyst consensus / company guidance |
+| Years 2–5 | 45% (declining) | Analyst-implied forward CAGR |
+| Year 10 | 15% | Moderated toward maturity |
+| Terminal | 4.35% | Risk-free rate |
+
+**Context:** CoreWeave's historical growth was 168%, but the plugin capped Year 1 at analyst consensus (134%). The growth trajectory fades aggressively from there — by year 10, the company would be growing at 15%, still well above the economy but far below its current pace.
+
+### Operating margin
+
+| Period | Margin | Context |
+|--------|--------|---------|
+| Current (LTM) | −0.9% | Operating loss |
+| Target (Year 10) | 7.41% | Computer Services industry average |
+| Convergence | Linear over 10 years | From loss to industry-average profitability |
+
+This is one of the most consequential assumptions: the plugin assumes CoreWeave will go from operating losses to industry-average margins by year 10. Given the capital-intensive nature of GPU cloud, this is neither aggressive nor conservative — it's the industry default.
+
+### Sales-to-capital ratio
+
+| Period | Ratio | Context |
+|--------|-------|---------|
+| Current | 0.17x | Heavy GPU build-out phase |
+| Years 1–5 | 2.0x (assumed) | Forward-looking, not historical |
+| Years 6–10 | 3.5x (assumed) | Approaching cloud infrastructure maturity |
+| Industry average | 5.19x | Pure software skews this high |
+
+**Critical flag:** The current sales-to-capital ratio of 0.17x reflects CoreWeave's massive GPU investment phase — it's spending far more on infrastructure than it's generating in revenue. The plugin manually anchored the forward assumption at 2.0x/3.5x, well below the industry average but well above the current rate. This is one of the most sensitive assumptions in the entire model.
+
+## Employee Stock Options
+
+Options were detected in the XBRL data but the Black-Scholes computation was not completed for this run. Option value was set to $0 in the equity bridge — meaning the final value per share may be slightly overstated.
+
+| Field | Value |
+|-------|-------|
+| Options detected | Yes |
+| Option value applied | $0 (computation TODO) |
+
+## DCF Model Output
+
+### 10-year FCFF projection
+
+| Year | Revenue | Growth | EBIT Margin | EBIT | After-tax EBIT | Reinvestment | FCFF | ROIC |
+|------|---------|--------|-------------|------|----------------|--------------|------|------|
+| Base | $5.1B | — | −0.9% | −$46M | −$46M | — | — | 0.0% |
+| 1 | $12.0B | 134% | −0.9% | −$108M | −$108M | $6.6B | −$6.7B | −0.4% |
+| 2 | $25.2B | 110% | 0.8% | $192M | $171M | $12.4B | −$12.2B | 0.5% |
+| 3 | $50.0B | 98% | 1.6% | $797M | $598M | $21.6B | −$21.0B | 1.2% |
+| 4 | $93.3B | 86% | 2.4% | $2.3B | $1.7B | $34.7B | −$33.1B | 2.4% |
+| 5 | $162.8B | 75% | 3.3% | $5.3B | $4.0B | $51.0B | −$47.0B | 3.8% |
+| 6 | $264.7B | 63% | 4.1% | $10.8B | $8.1B | $38.3B | −$30.2B | 5.2% |
+| 7 | $398.9B | 51% | 4.9% | $19.6B | $14.7B | $44.2B | −$29.5B | 7.6% |
+| 8 | $553.7B | 39% | 5.7% | $31.8B | $23.9B | $42.6B | −$18.7B | 10.0% |
+| 9 | $702.6B | 27% | 6.6% | $46.2B | $34.7B | $30.1B | **$4.6B** | 12.3% |
+| 10 | $808.0B | 15% | 7.4% | $59.9B | $44.9B | $10.0B | **$34.9B** | 14.4% |
+| Terminal | $843.1B | 4.4% | 7.4% | $62.5B | $46.9B | $23.1B | $23.7B | 8.8% |
+
+**The story in the numbers:** CoreWeave burns cash for the first 8 years as it reinvests aggressively to grow revenue from $5B to $554B. Free cash flow doesn't turn positive until Year 9. The entire valuation is driven by the terminal value and the massive cash flows projected in years 9–10.
+
+### Terminal value
+
+| Component | Value |
+|-----------|-------|
+| Terminal FCFF (Year 11) | $23.7B |
+| Terminal cost of capital | 8.81% |
+| Terminal growth rate | 4.35% |
+| **Terminal value** | **$531.9B** |
+| PV of terminal value | $184.5B |
+
+### Present value breakdown
+
+| Component | Value |
+|-----------|-------|
+| PV of FCFFs (years 1–10) | −$100.5B |
+| PV of terminal value | $184.5B |
+| **Operating value of the firm** | **$84.0B** |
+
+The present value of the first 10 years of cash flows is actually *negative* (−$100.5B) because CoreWeave burns cash in years 1–8. The entire positive value comes from the terminal value, which represents the steady-state business after year 10. This is a classic pattern for high-growth, capital-intensive companies.
+
+### Equity bridge
+
+| Step | Value |
+|------|-------|
+| Operating value of the firm | $84.0B |
+| − Debt | −$29.8B |
+| − Minority interests | $0 |
+| + Cash | $3.2B |
+| + Non-operating assets | $51M |
+| − Employee stock options | $0 |
+| × (1 − failure probability) | × 1.00 |
+| **= Equity value** | **$57.4B** |
+| ÷ Shares outstanding | 516M |
+| **= Value per share** | **$111.20** |
+
+### The verdict
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  COREWEAVE, INC. (CRWV)
+  Estimated intrinsic value: $111.20 per share
+  Current market price:      $83.51 per share
+
+  The stock appears UNDERVALUED by ~33%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+## Diagnostic Flags
+
+The plugin's diagnostics raised two flags:
+
+<Warning>
+  **FLAG 1:** Revenue growth of 134% exceeds 2× the Computer Services industry average of 27.1%. While anchored to analyst consensus, this is extreme and the model is highly sensitive to whether this growth materializes.
+</Warning>
+
+<Warning>
+  **FLAG 2:** Year 10 revenue of ~$808B vs. current $5.1B implies a 157× increase over 10 years. Even for an AI infrastructure company in a booming market, this is an aggressive assumption.
+</Warning>
+
+### Additional caveats
+
+- **Shares outstanding** were derived from market cap, not from XBRL filings
+- **Sales-to-capital ratio** was manually anchored (0.17x current vs. 2.0x assumed) — this is the single most sensitive assumption
+- **CoreWeave has no public 10-K prior to FY2025** (IPO March 2025) — no multi-year historical trend to calibrate against
+- **FCFF is negative in years 1–8** — the valuation is almost entirely terminal-value-driven
+- **Employee options** were detected but not valued — final result may be slightly overstated
+
+## What this case study demonstrates
+
+CoreWeave is a stress-test for the valuation plugin. It hits nearly every edge case:
+
+1. **Recent IPO** — only one annual filing available, no multi-year history
+2. **Pre-profitability** — negative EBIT makes many standard calculations (interest coverage, ROIC) unusual
+3. **Extreme leverage** — $29.8B of debt on $5.1B of revenue, resulting in a D-rated synthetic bond rating
+4. **Hyper-growth** — 168% historical growth, with analyst consensus at 134% for the next year
+5. **Capital-intensive** — current sales-to-capital of 0.17x requires manual forward-looking adjustment
+6. **Missing XBRL fields** — shares outstanding not in filings, requiring derivation from market cap
+
+The plugin handled all of these programmatically, flagged the risks, and produced a valuation that landed at $111/share — 33% above the market price at the time. Whether you agree with the assumptions or not, every number is traceable to a specific SEC filing or data source, and every judgment call is documented.

@@ -106,6 +106,17 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Case Studies",
+        "groups": [
+          {
+            "group": "Case Studies",
+            "pages": [
+              "case-studies/coreweave"
+            ]
+          }
+        ]
       }
     ],
     "global": {

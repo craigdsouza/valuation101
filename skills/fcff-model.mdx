@@ -2,29 +2,16 @@
 title: "FCFF Model"
 sidebarTitle: "FCFF Model"
 description: "Run the core DCF engine — 10-year FCFF projection, terminal value, and equity bridge — producing estimated value per share."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: fcff-model
 phase: 6
-inputs:
-  - LTM financial data
-  - Last 10-K data
-  - WACC (from cost-of-capital)
-  - Growth assumptions (from growth-and-profitability)
-  - R&D adjustment (from r-and-d-converter, optional)
-  - Lease adjustment (from lease-converter, optional)
-outputs:
-  - Estimated value per share
-  - 10-year projection table (revenue, EBIT, FCFF per year)
-  - Terminal value
-  - Equity bridge breakdown
-depends_on:
-  - cost-of-capital
-  - growth-and-profitability
-  - last-twelve-months
-  - last-10-k
-feeds_into:
-  - diagnostics
-  - valuation-report
----
+inputs: [LTM financial data, last 10-K data, WACC (from cost-of-capital), growth assumptions (from growth-and-profitability), R&D adjustment (from r-and-d-converter, optional), lease adjustment (from lease-converter, optional)]
+outputs: [estimated value per share, 10-year projection table (revenue, EBIT, FCFF per year), terminal value, equity bridge breakdown]
+depends_on: [cost-of-capital, growth-and-profitability, last-twelve-months, last-10-k]
+feeds_into: [diagnostics, valuation-report]
+*/}
 
 ## What it does
 

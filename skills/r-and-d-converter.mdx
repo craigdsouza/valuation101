@@ -2,21 +2,16 @@
 title: "R&D Converter"
 sidebarTitle: "R&D Converter"
 description: "Capitalize R&D expenses into a research asset, adjusting EBIT and invested capital for the DCF model."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: r-and-d-converter
 phase: 5
-inputs:
-  - R&D expense (current and historical)
-  - Amortization period (industry-specific)
-outputs:
-  - Adjusted EBIT (higher — R&D removed from expenses, amortization added)
-  - Research asset value (capitalized R&D)
-  - Adjusted invested capital
-depends_on:
-  - last-twelve-months
-feeds_into:
-  - cost-of-capital
-  - fcff-model
----
+inputs: [R&D expense (current and historical), amortization period (industry-specific)]
+outputs: [adjusted EBIT (higher — R&D removed from expenses, amortization added), research asset value (capitalized R&D), adjusted invested capital]
+depends_on: [last-twelve-months]
+feeds_into: [cost-of-capital, fcff-model]
+*/}
 
 ## What it does
 

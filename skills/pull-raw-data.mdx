@@ -2,17 +2,16 @@
 title: "Pull Raw Data"
 sidebarTitle: "Pull Raw Data"
 description: "Download the company's full XBRL fact set from SEC EDGAR."
+---
+
+{/* Agent-parseable skill metadata
 skill_id: pull-raw-data
 phase: 3
-inputs:
-  - CIK (from company-identifier)
-outputs:
-  - companyfacts.json (5–15 MB raw XBRL data)
-depends_on:
-  - company-identifier
-feeds_into:
-  - parse-raw-data-to-filings
----
+inputs: [CIK (from company-identifier)]
+outputs: [companyfacts.json (5–15 MB raw XBRL data)]
+depends_on: [company-identifier]
+feeds_into: [parse-raw-data-to-filings]
+*/}
 
 ## What it does
 

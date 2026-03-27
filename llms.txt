@@ -45,3 +45,7 @@
 - [adjustments.py](https://valuation101.mintlify.app/lib/adjustments): R&D capitalization, lease conversion
 - [equity_bridge.py](https://valuation101.mintlify.app/lib/equity-bridge): Operating value to equity value per share
 - [data_loader.py](https://valuation101.mintlify.app/lib/data-loader): Load Damodaran's reference datasets
+
+## Case Studies
+
+- [CoreWeave (CRWV)](https://valuation101.mintlify.app/case-studies/coreweave): Full Feeling Lucky FCFF valuation of a pre-profitability AI infrastructure company — $111.20/share vs. $83.51 market price. Covers every pipeline phase with real SEC EDGAR data, including edge cases: recent IPO, negative EBIT, extreme leverage, hyper-growth, and missing XBRL fields.
