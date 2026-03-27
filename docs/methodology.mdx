@@ -1,0 +1,59 @@
+---
+title: "Damodaran's FCFF Methodology"
+sidebarTitle: "Methodology"
+description: "The academic framework behind every calculation in Valuation101."
+---
+
+## The FCFF approach
+
+Free Cash Flow to Firm (FCFF) valuation estimates what a company is worth by projecting its future cash flows and discounting them to the present. It answers: "If I could buy this entire business today, what should I pay?"
+
+The approach comes from Aswath Damodaran's [fcffsimpleginzu spreadsheet](https://pages.stern.nyu.edu/~adamodar/), which implements a two-phase DCF model:
+
+1. **High-growth phase** (years 1–10): Revenue, margins, and reinvestment transition from current levels to stable-state targets
+2. **Terminal phase** (year 11+): The company grows at a stable rate in perpetuity
+
+## The valuation equation
+
+$$V_{firm} = \sum_{t=1}^{10} \frac{FCFF_t}{(1 + WACC)^t} + \frac{FCFF_{11} / (WACC_{stable} - g_{stable})}{(1 + WACC)^{10}}$$
+
+Where:
+- $FCFF_t$ = Free Cash Flow to Firm in year $t$
+- $WACC$ = Weighted Average Cost of Capital
+- $g_{stable}$ = Stable growth rate (typically the risk-free rate)
+
+## From firm value to equity value
+
+The DCF gives you the value of the entire firm (debt + equity). To get to equity value per share:
+
+```
+  Operating value of the firm (PV of FCFFs + terminal value)
+− Debt (book value of interest-bearing debt)
++ Cash and short-term investments
+− Value of employee stock options (Black-Scholes)
+× (1 − probability of failure)
+÷ Shares outstanding
+= Estimated value per share
+```
+
+## Key assumptions
+
+Every DCF comes down to a handful of assumptions. Valuation101 makes these explicit:
+
+| Assumption | What it means | Where it comes from |
+|------------|---------------|-------------------|
+| Revenue growth | How fast the top line grows | Historical trend + industry benchmarks |
+| Target operating margin | Where EBIT margin converges | Industry median or company target |
+| Sales-to-capital ratio | Revenue generated per dollar reinvested | Industry average, adjusted for company |
+| Cost of capital (WACC) | Discount rate for future cash flows | CAPM + synthetic rating + capital structure |
+| Stable growth rate | Long-run growth in perpetuity | Risk-free rate (capped at GDP growth) |
+
+<Info>
+  Damodaran's key insight: the *story* about a company should drive the *numbers*, not the other way around. Are you valuing Apple as a mature cash cow or a growth company reinventing healthcare? The story changes every assumption.
+</Info>
+
+## Further reading
+
+- [Damodaran's Valuation course (NYU Stern)](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/webcastvalonline.htm)
+- [The Little Book of Valuation](https://pages.stern.nyu.edu/~adamodar/)
+- [fcffsimpleginzu spreadsheet](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/spreadsh.htm)

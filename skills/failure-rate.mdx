@@ -1,0 +1,26 @@
+---
+title: "Failure Rate"
+sidebarTitle: "Failure Rate"
+description: "Estimate the probability of corporate failure and adjust the intrinsic value accordingly."
+skill_id: failure-rate
+phase: 6
+inputs:
+  - Bond rating (if rated) or company age
+outputs:
+  - Probability of failure (%)
+  - Adjusted value per share = DCF value × (1 − failure probability)
+depends_on:
+  - fcff-model
+feeds_into:
+  - fcff-model
+---
+
+## What it does
+
+Estimates the probability that the company will fail (go bankrupt) before the projected cash flows materialize. The DCF value is then adjusted: `Adjusted value = DCF value × (1 − failure probability)`.
+
+## Two methods
+
+**Bond-rating-based:** Uses historical default rates by bond rating from Damodaran's dataset. If the company has a bond rating (or synthetic rating from the cost-of-capital skill), the historical 10-year cumulative default rate for that rating class is used.
+
+**Age-based:** Uses Bureau of Labor Statistics (BLS) business survival data. Younger companies have higher failure rates. Used when no bond rating is available.

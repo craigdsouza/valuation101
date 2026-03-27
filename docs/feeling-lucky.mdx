@@ -1,0 +1,40 @@
+---
+title: "Feeling Lucky"
+sidebarTitle: "Feeling Lucky"
+description: "One-click valuation using sensible defaults — get an intrinsic value in 60 seconds."
+---
+
+## What is Feeling Lucky?
+
+Feeling Lucky runs the entire valuation pipeline with sensible defaults — no questions asked. You get an intrinsic value per share in about 60 seconds, then you can drill into any assumption and tweak it.
+
+## When to use it
+
+- You want a quick sanity check on a stock price
+- You're screening multiple companies and need rough values fast
+- You want to see the full output before deciding what to customize
+
+## What defaults does it use?
+
+| Assumption | Default logic |
+|------------|--------------|
+| Cost of capital | Industry average WACC |
+| Revenue growth | Blended: historical CAGR + industry median |
+| Target operating margin | Industry median |
+| Sales-to-capital ratio | Industry average |
+| R&D capitalization | Auto-detect: capitalizes if R&D > 5% of revenue |
+| Lease conversion | Auto-detect: converts if operating leases > 10% of assets |
+| Failure probability | Bond-rating-based if rated, age-based otherwise |
+
+## After the quick valuation
+
+Once you see the result, you can:
+
+- **Tweak any assumption** — "What if growth is 15% instead of 12%?"
+- **Switch to Expert mode** — re-run with full control
+- **Run diagnostics** — Damodaran's 6-step sanity check
+- **Generate a report** — `.docx` with full breakdown
+
+## Typical session time
+
+~60 seconds for the initial valuation, plus whatever time you spend tweaking afterward.

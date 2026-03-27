@@ -1,0 +1,75 @@
+---
+title: "FCFF Model"
+sidebarTitle: "FCFF Model"
+description: "Run the core DCF engine — 10-year FCFF projection, terminal value, and equity bridge — producing estimated value per share."
+skill_id: fcff-model
+phase: 6
+inputs:
+  - LTM financial data
+  - Last 10-K data
+  - WACC (from cost-of-capital)
+  - Growth assumptions (from growth-and-profitability)
+  - R&D adjustment (from r-and-d-converter, optional)
+  - Lease adjustment (from lease-converter, optional)
+outputs:
+  - Estimated value per share
+  - 10-year projection table (revenue, EBIT, FCFF per year)
+  - Terminal value
+  - Equity bridge breakdown
+depends_on:
+  - cost-of-capital
+  - growth-and-profitability
+  - last-twelve-months
+  - last-10-k
+feeds_into:
+  - diagnostics
+  - valuation-report
+---
+
+## What it does
+
+The core DCF engine. Takes all prior outputs and runs the full FCFF valuation, producing an estimated value per share.
+
+## The three stages
+
+### Stage 1: 10-year FCFF projection
+
+For each year 1–10:
+
+| Line item | Computation |
+|-----------|-------------|
+| Revenue | Prior year × (1 + growth rate) |
+| Operating margin | Linear convergence from current to target |
+| EBIT | Revenue × operating margin |
+| After-tax EBIT | EBIT × (1 − marginal tax rate) |
+| Reinvestment | Δ Revenue / sales-to-capital ratio |
+| **FCFF** | **After-tax EBIT − reinvestment** |
+
+Growth rates decline linearly from the initial high-growth rate to the stable growth rate over the 10-year period.
+
+### Stage 2: Terminal value
+
+$$TV = \frac{FCFF_{11}}{WACC_{stable} - g_{stable}}$$
+
+Where:
+- $FCFF_{11}$ = year 11 free cash flow (at stable growth)
+- $WACC_{stable}$ = cost of capital at maturity (may differ from high-growth WACC)
+- $g_{stable}$ = stable growth rate (typically ≤ risk-free rate)
+
+### Stage 3: Equity bridge
+
+```
+  PV of year 1–10 FCFFs
++ PV of terminal value
+= Operating value of the firm
+− Debt
++ Cash
+− Employee stock options value
+× (1 − probability of failure)
+÷ Shares outstanding
+= Estimated value per share
+```
+
+## Python engine
+
+The math is implemented in `lib/dcf_engine.py` — a pure Python module with no AI dependencies. Every intermediate value is logged to the run transcript for auditability.

@@ -1,0 +1,27 @@
+---
+title: "Equity Bridge"
+sidebarTitle: "equity_bridge.py"
+description: "Convert operating value of the firm to equity value per share."
+---
+
+## Module: `lib/equity_bridge.py`
+
+Implements the final step of the valuation: converting the discounted operating value into a per-share equity value.
+
+## Key functions
+
+### `equity_bridge()`
+
+```
+Operating value
+− Debt
++ Cash
+− Employee options value
+× (1 − failure probability)
+÷ Shares outstanding
+= Value per share
+```
+
+### `option_value()`
+
+Dilution-adjusted Black-Scholes valuation of outstanding employee stock options.

@@ -1,0 +1,49 @@
+---
+title: "DCF Engine"
+sidebarTitle: "dcf_engine.py"
+description: "FCFF projection, terminal value calculation, and present value discounting."
+---
+
+## Module: `lib/dcf_engine.py`
+
+The core computation engine for the FCFF valuation model.
+
+## Key functions
+
+### `project_fcff()`
+
+Projects free cash flow to firm for years 1–10 plus the terminal year.
+
+**Parameters:**
+- `base_revenue` — LTM revenue (starting point)
+- `initial_growth_rate` — year 1 revenue growth rate
+- `stable_growth_rate` — terminal growth rate
+- `current_margin` — current operating margin
+- `target_margin` — target operating margin at convergence
+- `convergence_year` — year by which margin reaches target
+- `sales_to_capital` — revenue generated per dollar of reinvestment
+- `tax_rate` — marginal tax rate
+
+**Returns:** List of dictionaries, one per year, each containing revenue, EBIT, after-tax EBIT, reinvestment, and FCFF.
+
+### `terminal_value()`
+
+Computes the terminal value using the perpetuity growth model.
+
+**Parameters:**
+- `terminal_fcff` — FCFF in the terminal year
+- `stable_wacc` — cost of capital at maturity
+- `stable_growth` — perpetuity growth rate
+
+**Returns:** Terminal value (float).
+
+### `discount_to_present()`
+
+Discounts projected FCFFs and terminal value to present value at WACC.
+
+**Parameters:**
+- `projections` — list of annual FCFF values
+- `terminal_value` — terminal value
+- `wacc` — weighted average cost of capital
+
+**Returns:** Present value of firm (float).

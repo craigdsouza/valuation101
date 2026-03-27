@@ -1,0 +1,43 @@
+---
+title: "FCFF Orchestrator"
+sidebarTitle: "FCFF (Full Pipeline)"
+description: "Orchestrate the complete end-to-end FCFF intrinsic valuation — from company name to value per share."
+skill_id: fcff
+phase: 0
+inputs:
+  - Company name or ticker
+  - Mode (Expert, Novice, or Feeling Lucky)
+outputs:
+  - Complete valuation (value per share + all intermediate outputs)
+depends_on: []
+feeds_into: []
+---
+
+## What it does
+
+The orchestrator skill that runs the full valuation pipeline. It coordinates all other skills in the correct order, passing outputs between them.
+
+## Execution flow
+
+1. [company-identifier](/skills/company-identifier) — resolve the company
+2. [identify-required-statements](/skills/identify-required-statements) — determine needed filings
+3. [pull-raw-data](/skills/pull-raw-data) — fetch XBRL data
+4. [parse-raw-data-to-filings](/skills/parse-raw-data-to-filings) — extract per-filing data
+5. [last-twelve-months](/skills/last-twelve-months) — compute LTM financials
+6. [last-10-k](/skills/last-10-k) — extract annual comparison data
+7. [r-and-d-converter](/skills/r-and-d-converter) — capitalize R&D (if applicable)
+8. [lease-converter](/skills/lease-converter) — convert leases (if applicable)
+9. [cost-of-capital](/skills/cost-of-capital) — compute WACC
+10. [growth-and-profitability](/skills/growth-and-profitability) — set assumptions
+11. [fcff-model](/skills/fcff-model) — run the DCF
+12. [employee-options](/skills/employee-options) — value options (if applicable)
+13. [failure-rate](/skills/failure-rate) — adjust for distress
+14. [diagnostics](/skills/diagnostics) — sanity check
+
+## Mode behavior
+
+| Mode | Conversation style | User decisions | Time |
+|------|-------------------|----------------|------|
+| Expert | Data + options, minimal explanation | Every assumption | 10–15 min |
+| Novice | Full explanations at each step | Guided with recommendations | 15–20 min |
+| Feeling Lucky | Silent execution with defaults | None (review after) | ~60 sec |

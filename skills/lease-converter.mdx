@@ -1,0 +1,27 @@
+---
+title: "Lease Converter"
+sidebarTitle: "Lease Converter"
+description: "Convert operating lease commitments into debt equivalents, adjusting EBIT, debt, and invested capital."
+skill_id: lease-converter
+phase: 5
+inputs:
+  - Operating lease commitments (from footnotes or ASC 842 disclosures)
+  - Pre-tax cost of debt
+outputs:
+  - Lease debt equivalent
+  - Adjusted EBIT (add back lease expense, subtract depreciation of lease asset)
+  - Adjusted total debt
+depends_on:
+  - last-twelve-months
+feeds_into:
+  - cost-of-capital
+  - fcff-model
+---
+
+## What it does
+
+Converts operating lease commitments into debt equivalents using Damodaran's approach. This adjusts the company's debt, EBIT, and invested capital to reflect the economic reality of lease obligations.
+
+## When to use
+
+Auto-detected in Feeling Lucky mode when operating lease right-of-use assets exceed 10% of total assets. Most companies now capitalize leases under ASC 842/IFRS 16, but the adjustment may still be needed for consistency with Damodaran's framework.

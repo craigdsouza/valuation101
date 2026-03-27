@@ -1,0 +1,33 @@
+---
+title: "Last 10-K"
+sidebarTitle: "Last 10-K"
+description: "Extract financial data from the most recent annual 10-K filing for Damodaran's Input sheet column C."
+skill_id: last-10-k
+phase: 4
+inputs:
+  - Primary 10-K _raw.json
+outputs:
+  - "last_10k_{date}.json mapped to Damodaran Input sheet cells C11–C20"
+depends_on:
+  - parse-raw-data-to-filings
+feeds_into:
+  - cost-of-capital
+  - fcff-model
+---
+
+## What it does
+
+Reads the primary annual 10-K `_raw.json` file directly — no bridging or summing required. Extracts the same financial fields as the LTM skill but from the most recent completed annual filing. This provides the year-over-year comparison data that Damodaran's spreadsheet uses in column C.
+
+## Output fields
+
+| Field | Damodaran cell | Description |
+|-------|---------------|-------------|
+| revenues | C11 | Annual revenue |
+| operating_income | C12 | Annual operating income |
+| interest_expense | C13 | Annual interest expense |
+| book_value_equity | C14 | Year-end shareholders' equity |
+| book_value_debt | C15 | Year-end total debt |
+| cash | C18 | Year-end cash |
+| shares_outstanding | C19 | Year-end diluted shares |
+| current_stock_price | C20 | Price at fiscal year end |

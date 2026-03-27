@@ -1,0 +1,27 @@
+---
+title: "Diagnostics"
+sidebarTitle: "Diagnostics"
+description: "Run Damodaran's 6-step diagnostic checklist to sanity-check the valuation output."
+skill_id: diagnostics
+phase: 7
+inputs:
+  - Completed valuation output (from fcff-model)
+outputs:
+  - 6-point diagnostic report with pass/warn/fail flags
+depends_on:
+  - fcff-model
+feeds_into: []
+---
+
+## What it does
+
+Runs Damodaran's 6-step diagnostic checklist on the completed valuation. Flags inconsistencies so you can catch errors before acting on the result.
+
+## The 6 checks
+
+1. **Revenue growth vs. market size** — Is the projected revenue plausible given the total addressable market?
+2. **Margin convergence** — Does the target margin make sense for the industry? Is the convergence path reasonable?
+3. **Reinvestment consistency** — Is the sales-to-capital ratio consistent with the growth assumption? Higher growth requires more reinvestment.
+4. **Risk and cost of capital** — Does the WACC reflect the company's actual risk profile? Is it converging to a reasonable stable-state WACC?
+5. **Terminal value proportion** — What fraction of total value comes from the terminal value? Above 85% is a warning sign.
+6. **Price vs. value** — How does the intrinsic value compare to the current market price? Large gaps warrant a second look at assumptions.

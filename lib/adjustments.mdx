@@ -1,0 +1,19 @@
+---
+title: "Adjustments"
+sidebarTitle: "adjustments.py"
+description: "R&D capitalization and operating lease conversion for the DCF model."
+---
+
+## Module: `lib/adjustments.py`
+
+Handles the two main pre-valuation adjustments that Damodaran recommends.
+
+## Key functions
+
+### `capitalize_rd()`
+
+Capitalizes R&D expenses into a research asset over a specified amortization period. Returns adjusted EBIT, research asset value, and adjusted invested capital.
+
+### `convert_leases()`
+
+Converts operating lease commitments into a debt equivalent using the pre-tax cost of debt as the discount rate. Returns the lease debt, adjusted EBIT, and adjusted total debt.

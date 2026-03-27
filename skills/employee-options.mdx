@@ -1,0 +1,26 @@
+---
+title: "Employee Options"
+sidebarTitle: "Employee Options"
+description: "Compute the value of outstanding employee stock options using dilution-adjusted Black-Scholes."
+skill_id: employee-options
+phase: 6
+inputs:
+  - Options outstanding (number, average strike price, average maturity)
+  - Current stock price
+  - Risk-free rate
+  - Stock price standard deviation
+outputs:
+  - Total option value (subtracted from equity in the DCF equity bridge)
+depends_on:
+  - fcff-model
+feeds_into:
+  - fcff-model
+---
+
+## What it does
+
+Determines whether the company has outstanding employee stock options and, if so, computes their total value using dilution-adjusted Black-Scholes. The resulting value is subtracted from equity in the DCF equity bridge, reducing the estimated value per share.
+
+## Why it matters
+
+Employee stock options represent a claim on equity that existing shareholders must share. Ignoring them overstates the value per share. The dilution-adjusted Black-Scholes model accounts for this by valuing the options and deducting them before dividing by shares outstanding.

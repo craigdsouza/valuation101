@@ -1,0 +1,47 @@
+# Valuation101
+
+> A conversational FCFF intrinsic valuation plugin for Claude, built on Aswath Damodaran's fcffsimpleginzu spreadsheet methodology. You talk to it; it does the math.
+
+## Documentation
+
+- [Introduction](https://valuation101.mintlify.app/docs/introduction): What Valuation101 is, who it's for, and why it exists
+- [Getting Started](https://valuation101.mintlify.app/docs/getting-started): Install the plugin and run your first valuation in under 5 minutes
+- [How It Works](https://valuation101.mintlify.app/docs/how-it-works): The 7-phase FCFF pipeline from company name to intrinsic value per share
+- [Data Pipeline](https://valuation101.mintlify.app/docs/data-pipeline): How SEC EDGAR XBRL data flows from raw API response to structured valuation inputs
+- [Methodology](https://valuation101.mintlify.app/docs/methodology): Damodaran's FCFF framework — the academic foundation behind every calculation
+- [Interpreting Results](https://valuation101.mintlify.app/docs/interpreting-results): How to read, evaluate, and act on a valuation output
+
+## Modes
+
+- [Expert Mode](https://valuation101.mintlify.app/docs/expert-mode): Full control over every DCF assumption
+- [Novice Mode](https://valuation101.mintlify.app/docs/novice-mode): Guided walkthrough with explanations at every step
+- [Feeling Lucky](https://valuation101.mintlify.app/docs/feeling-lucky): One-click valuation with sensible defaults in ~60 seconds
+
+## Skills Reference
+
+- [Skills Overview](https://valuation101.mintlify.app/skills/overview): All 16 skills with dependency graph, inputs, outputs, and execution order
+- [company-identifier](https://valuation101.mintlify.app/skills/company-identifier): Resolve company name/ticker to confirmed identity (CIK, exchange, sector)
+- [identify-required-statements](https://valuation101.mintlify.app/skills/identify-required-statements): Determine which SEC 10-K/10-Q filings are needed for the valuation
+- [pull-raw-data](https://valuation101.mintlify.app/skills/pull-raw-data): Download the company's full XBRL fact set from SEC EDGAR
+- [parse-raw-data-to-filings](https://valuation101.mintlify.app/skills/parse-raw-data-to-filings): Transform raw XBRL JSON into structured per-filing extracts
+- [last-twelve-months](https://valuation101.mintlify.app/skills/last-twelve-months): Compute trailing-12-month financials for Damodaran's Input sheet
+- [last-10-k](https://valuation101.mintlify.app/skills/last-10-k): Extract most recent annual 10-K financials
+- [cost-of-capital](https://valuation101.mintlify.app/skills/cost-of-capital): Compute WACC using 3 methods (Detailed CAPM, Industry Average, Distribution)
+- [growth-and-profitability](https://valuation101.mintlify.app/skills/growth-and-profitability): Set the 4 key value-driver assumptions (growth, margin, convergence, reinvestment)
+- [fcff-model](https://valuation101.mintlify.app/skills/fcff-model): Run the core DCF engine — 10-year projection, terminal value, equity bridge
+- [r-and-d-converter](https://valuation101.mintlify.app/skills/r-and-d-converter): Capitalize R&D expenses into a research asset
+- [lease-converter](https://valuation101.mintlify.app/skills/lease-converter): Convert operating leases to debt equivalents
+- [employee-options](https://valuation101.mintlify.app/skills/employee-options): Value outstanding employee stock options via Black-Scholes
+- [failure-rate](https://valuation101.mintlify.app/skills/failure-rate): Estimate probability of corporate failure
+- [fcff (orchestrator)](https://valuation101.mintlify.app/skills/fcff): Run the complete end-to-end FCFF valuation pipeline
+- [diagnostics](https://valuation101.mintlify.app/skills/diagnostics): Damodaran's 6-step sanity check on the valuation output
+- [valuation-report](https://valuation101.mintlify.app/skills/valuation-report): Generate a formatted .docx valuation report
+
+## Python Library
+
+- [Library Overview](https://valuation101.mintlify.app/lib/overview): Architecture of the deterministic math engine
+- [dcf_engine.py](https://valuation101.mintlify.app/lib/dcf-engine): FCFF projection, terminal value, discounting
+- [cost_of_capital.py](https://valuation101.mintlify.app/lib/cost-of-capital): WACC computation (3 methods)
+- [adjustments.py](https://valuation101.mintlify.app/lib/adjustments): R&D capitalization, lease conversion
+- [equity_bridge.py](https://valuation101.mintlify.app/lib/equity-bridge): Operating value to equity value per share
+- [data_loader.py](https://valuation101.mintlify.app/lib/data-loader): Load Damodaran's reference datasets

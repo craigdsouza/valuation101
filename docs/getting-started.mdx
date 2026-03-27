@@ -1,0 +1,83 @@
+---
+title: "Getting Started"
+sidebarTitle: "Getting Started"
+description: "Install the Valuation101 plugin and run your first DCF valuation in under 5 minutes."
+---
+
+## Prerequisites
+
+- [Claude Desktop](https://claude.ai/download) (with Cowork mode enabled)
+- An internet connection (for SEC EDGAR data fetching)
+
+## Install the plugin
+
+<Steps>
+  <Step title="Open Claude Desktop">
+    Launch Claude Desktop and ensure Cowork mode is active.
+  </Step>
+  <Step title="Install from the plugin marketplace">
+    Navigate to the plugin marketplace and search for **Valuation101**. Click **Install**.
+  </Step>
+  <Step title="Verify installation">
+    Type "Value Apple" in the chat. If the plugin responds by identifying Apple Inc. (AAPL), you're set.
+  </Step>
+</Steps>
+
+## Your first valuation
+
+Once installed, just start a conversation. Here are some ways to trigger a valuation:
+
+```
+"Value Apple"
+"What's NVDA worth?"
+"Run a DCF on Microsoft"
+"How much is Tesla's stock worth intrinsically?"
+```
+
+The plugin will ask you to choose a mode:
+
+| Mode | Best for | Time |
+|------|----------|------|
+| **Expert** | Full control over every assumption | 10–15 min |
+| **Novice** | Learning DCF with guided explanations | 15–20 min |
+| **Feeling Lucky** | Quick answer with sensible defaults | ~60 sec |
+
+<Tip>
+  Start with **Feeling Lucky** to see the full pipeline in action, then re-run in Expert mode to refine assumptions.
+</Tip>
+
+## What happens under the hood
+
+When you say "Value Apple", the plugin runs 16 skills in sequence:
+
+1. **Identify the company** — resolves "Apple" to ticker AAPL, CIK 0000320193
+2. **Determine required filings** — figures out which 10-K and 10-Q documents are needed
+3. **Fetch SEC data** — downloads the company's full XBRL fact set from EDGAR
+4. **Parse into filings** — extracts per-filing financial data from the raw JSON
+5. **Compute LTM financials** — trailing-twelve-month income statement and balance sheet
+6. **Extract last 10-K** — the most recent annual filing for comparison
+7. **Estimate cost of capital** — WACC using CAPM, synthetic ratings, and industry data
+8. **Set growth assumptions** — revenue growth, target margin, sales-to-capital ratio
+9. **Run the DCF** — 10-year FCFF projection + terminal value + equity bridge
+10. **Diagnose the result** — Damodaran's 6-step sanity check
+
+## Understanding the output
+
+The final output includes:
+
+- **Estimated value per share** — the headline number
+- **Revenue projections** — year-by-year for 10 years + terminal year
+- **FCFF projections** — after-tax operating income minus reinvestment
+- **WACC breakdown** — cost of equity, cost of debt, weights
+- **Equity bridge** — from operating value to equity value per share (subtracting debt, adding cash, adjusting for options)
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="How It Works" icon="gears" href="/docs/how-it-works">
+    Understand the pipeline in detail
+  </Card>
+  <Card title="Skills Reference" icon="book" href="/skills/overview">
+    Browse all 16 skills
+  </Card>
+</CardGroup>

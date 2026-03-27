@@ -1,0 +1,58 @@
+---
+title: "Introduction"
+sidebarTitle: "Introduction"
+description: "What Valuation101 is, who it's for, and why it exists."
+---
+
+## What is Valuation101?
+
+Valuation101 is a Claude plugin that performs Damodaran-style FCFF (Free Cash Flow to Firm) intrinsic valuations through conversation. You tell it which company to value, and it handles everything: fetching SEC filings, computing trailing-twelve-month financials, estimating the cost of capital, projecting cash flows, and arriving at an intrinsic value per share.
+
+The plugin is built on [Aswath Damodaran's fcffsimpleginzu spreadsheet](https://pages.stern.nyu.edu/~adamodar/) — every formula maps to a specific cell in that workbook. The difference is that instead of manually populating a spreadsheet, you have a conversation.
+
+## Who is it for?
+
+- **Investors** who want a quick, rigorous DCF valuation of any US-listed company
+- **Finance students** learning Damodaran's methodology who want an interactive walkthrough
+- **AI agents** that need structured, machine-readable valuation data
+
+## How is it built?
+
+The plugin is a bundle of 16 skills backed by a deterministic Python library:
+
+- **Skills** handle the conversation — they know what to ask, when to fetch data, and how to present results
+- **Python library** (`lib/`) handles the math — WACC computation, DCF projection, terminal value, equity bridge
+- **Data pipeline** fetches live SEC EDGAR XBRL data, so valuations use real financial statements, not stale estimates
+
+<Info>
+  Every calculation is auditable. The plugin logs every input, intermediate value, and output to a run transcript so you can trace any number back to its source.
+</Info>
+
+## Architecture at a glance
+
+```mermaid
+graph LR
+    A[User: 'Value Apple'] --> B[company-identifier]
+    B --> C[identify-required-statements]
+    C --> D[pull-raw-data]
+    D --> E[parse-raw-data-to-filings]
+    E --> F[last-twelve-months]
+    E --> G[last-10-k]
+    F --> H[cost-of-capital]
+    G --> H
+    H --> I[growth-and-profitability]
+    I --> J[fcff-model]
+    J --> K[diagnostics]
+    K --> L[Value per share]
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/docs/getting-started">
+    Install and run your first valuation
+  </Card>
+  <Card title="How It Works" icon="gears" href="/docs/how-it-works">
+    Deep dive into the 7-phase pipeline
+  </Card>
+</CardGroup>

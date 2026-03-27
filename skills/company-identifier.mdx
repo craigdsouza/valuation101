@@ -1,0 +1,46 @@
+---
+title: "Company Identifier"
+sidebarTitle: "Company Identifier"
+description: "Resolve a company name or ticker to a confirmed identity with CIK, exchange, and sector."
+skill_id: company-identifier
+phase: 1
+inputs:
+  - Company name or ticker symbol
+outputs:
+  - Confirmed company identity (legal name, ticker, CIK, exchange, sector)
+depends_on: []
+feeds_into:
+  - identify-required-statements
+---
+
+## What it does
+
+Takes a company name ("Apple"), ticker ("AAPL"), or informal reference ("the iPhone company") and resolves it to a confirmed identity using SEC EDGAR search and web verification.
+
+## Output
+
+| Field | Example |
+|-------|---------|
+| Legal name | Apple Inc. |
+| Ticker | AAPL |
+| CIK | 0000320193 |
+| Exchange | NASDAQ |
+| Sector | Technology |
+| Fiscal year end | September |
+
+## How it works
+
+1. Searches SEC EDGAR's full-text company search for the input
+2. Cross-references with exchange listings to confirm the ticker
+3. Presents the match to the user for confirmation before proceeding
+4. Handles edge cases: multiple matches, delisted companies, ADRs, dual-listed stocks
+
+## Edge cases
+
+- **Ambiguous names** — "Amazon" could be Amazon.com Inc. or Amazon Group Ltd. The skill presents options and asks the user to confirm.
+- **Name changes** — companies that have renamed (e.g., Facebook → Meta) are resolved via SEC EDGAR's historical records.
+- **Non-US companies** — currently supports US-listed companies only (those with SEC filings).
+
+<Note>
+  This skill has no Python library component — it's pure conversation + web search. All other skills depend on the CIK it produces.
+</Note>

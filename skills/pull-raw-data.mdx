@@ -1,0 +1,37 @@
+---
+title: "Pull Raw Data"
+sidebarTitle: "Pull Raw Data"
+description: "Download the company's full XBRL fact set from SEC EDGAR."
+skill_id: pull-raw-data
+phase: 3
+inputs:
+  - CIK (from company-identifier)
+outputs:
+  - companyfacts.json (5–15 MB raw XBRL data)
+depends_on:
+  - company-identifier
+feeds_into:
+  - parse-raw-data-to-filings
+---
+
+## What it does
+
+Fetches the company's complete XBRL fact set from the SEC EDGAR API. This is a single large JSON file containing every financial fact the company has ever reported across all filings.
+
+## API endpoint
+
+```
+GET https://data.sec.gov/api/xbrl/companyfacts/CIK{padded_cik}.json
+```
+
+Required header: `User-Agent: ValuationPlugin admin@example.com`
+
+## Caching
+
+The fetched file is cached at `data/cache/{TICKER}/companyfacts.json`. A companion file `companyfacts_fetched.txt` records the fetch timestamp. The cache is refreshed if older than 24 hours.
+
+If the cache is fresh, this skill is skipped entirely — no API call is made.
+
+## Output size
+
+Typical response sizes: 5–15 MB depending on the company's filing history. Large, long-listed companies (e.g., GE, Apple) may exceed 20 MB.

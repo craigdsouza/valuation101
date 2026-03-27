@@ -1,0 +1,48 @@
+---
+title: "Interpreting Results"
+sidebarTitle: "Interpreting Results"
+description: "How to read, evaluate, and act on a Valuation101 output."
+---
+
+## The output at a glance
+
+After a valuation run, you receive:
+
+- **Estimated value per share** — the headline intrinsic value
+- **Current market price** — for comparison
+- **Implied upside/downside** — percentage difference between intrinsic value and market price
+- **Full projection table** — 10-year revenue, EBIT, FCFF, and discount factors
+- **Equity bridge** — how operating value becomes equity value per share
+- **WACC breakdown** — cost of equity, cost of debt, and weights
+
+## What to look for
+
+### Is the growth rate reasonable?
+
+Compare the projected revenue CAGR against the company's historical growth and the industry average. A 25% growth rate for a mature utility company should raise flags; the same rate for a high-growth SaaS company might be conservative.
+
+### Do margins converge sensibly?
+
+The model transitions current operating margins to a target margin over the projection period. Check that the target margin is realistic for the industry and that the convergence path makes sense.
+
+### Is reinvestment consistent with growth?
+
+The sales-to-capital ratio determines how much the company must reinvest to grow. Higher growth requires more reinvestment. If the model shows high growth with low reinvestment, the value may be overstated.
+
+### Does the terminal value dominate?
+
+In a well-calibrated DCF, the terminal value typically accounts for 50–70% of total firm value. If it's above 85%, the valuation is essentially a bet on what happens after year 10 — consider shortening the high-growth period or increasing near-term cash flows.
+
+## Damodaran's diagnostic checklist
+
+The [diagnostics](/skills/diagnostics) skill runs 6 automated checks on every valuation — use it to catch common errors before taking action.
+
+## What a DCF does NOT tell you
+
+- **Timing** — a stock can be undervalued for years before the market agrees
+- **Catalysts** — intrinsic value doesn't predict what will make the price move
+- **Precision** — treat the output as a range, not a point estimate. Small changes in WACC or growth can shift the value by 20–30%
+
+<Tip>
+  Run the valuation twice with different assumptions (optimistic and pessimistic) to get a sense of the range. The difference between the two tells you how sensitive the valuation is.
+</Tip>

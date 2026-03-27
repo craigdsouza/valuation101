@@ -1,0 +1,137 @@
+---
+title: "How It Works"
+sidebarTitle: "How It Works"
+description: "The 7-phase FCFF pipeline from company name to intrinsic value per share."
+---
+
+## The pipeline
+
+Valuation101 follows the same logical flow as Damodaran's fcffsimpleginzu spreadsheet, broken into 7 phases. Each phase is handled by one or more skills, and the output of each phase feeds into the next.
+
+```mermaid
+graph TD
+    P1[Phase 1: Company Identification] --> P2[Phase 2: Filing Discovery]
+    P2 --> P3[Phase 3: Data Collection]
+    P3 --> P4[Phase 4: Financial Assembly]
+    P4 --> P5[Phase 5: Cost of Capital]
+    P5 --> P6[Phase 6: Growth & Profitability]
+    P6 --> P7[Phase 7: DCF Model]
+    P7 --> OUT[Value per Share]
+```
+
+---
+
+## Phase 1: Company Identification
+
+**Skill:** [company-identifier](/skills/company-identifier)
+
+Resolves a company name or ticker to a confirmed identity — full legal name, ticker, CIK number, exchange, and sector. Uses SEC EDGAR search and web verification.
+
+**Output:** Confirmed company identity with CIK for API calls.
+
+---
+
+## Phase 2: Filing Discovery
+
+**Skill:** [identify-required-statements](/skills/identify-required-statements)
+
+Determines which SEC filings are needed based on the company's fiscal calendar and the valuation date. Identifies the primary 10-K, prior-year 10-K, and any bridge 10-Q filings needed for LTM computation.
+
+**Output:** `statements_required_{date}.json` — a structured list of every filing the pipeline needs.
+
+---
+
+## Phase 3: Data Collection
+
+**Skills:** [pull-raw-data](/skills/pull-raw-data) → [parse-raw-data-to-filings](/skills/parse-raw-data-to-filings)
+
+Downloads the company's full XBRL fact set from SEC EDGAR (a 5–15 MB JSON file containing every fact ever filed), then parses it into structured per-filing JSON files — one for each 10-K and 10-Q identified in Phase 2.
+
+Intermediate outputs include a key inventory (`company-facts-keys.json`) and one CSV per XBRL tag for debugging.
+
+**Output:** Per-filing `_raw.json` files with every valuation-relevant field extracted.
+
+---
+
+## Phase 4: Financial Assembly
+
+**Skills:** [last-twelve-months](/skills/last-twelve-months) + [last-10-k](/skills/last-10-k)
+
+Assembles the financial inputs Damodaran's spreadsheet needs:
+
+- **LTM (Column B):** Trailing-twelve-month figures computed by combining the most recent 10-K with bridge quarter 10-Qs. For income statement items: `Annual + Current Quarter(s) − Prior Year Quarter(s)`. For balance sheet items: most recent quarter-end snapshot.
+- **Last 10-K (Column C):** The most recent completed annual filing — used for year-over-year comparison and as the base for certain calculations.
+
+**Output:** `ltm_{date}.json` and `last_10k_{date}.json` — mapped directly to Damodaran Input sheet cells B11–B23 and C11–C23.
+
+---
+
+## Phase 5: Cost of Capital
+
+**Skill:** [cost-of-capital](/skills/cost-of-capital)
+
+Computes the Weighted Average Cost of Capital (WACC) using three methods:
+
+1. **Detailed** — bottom-up: unlevered beta → re-lever → CAPM cost of equity + synthetic rating → cost of debt → WACC
+2. **Industry Average** — uses Damodaran's industry average cost of capital directly
+3. **Distribution** — shows where the company falls on the sector-wide WACC distribution
+
+Also handles operating lease and R&D adjustments if applicable ([lease-converter](/skills/lease-converter), [r-and-d-converter](/skills/r-and-d-converter)).
+
+**Output:** WACC (%), cost of equity, cost of debt, and capital structure weights.
+
+---
+
+## Phase 6: Growth & Profitability
+
+**Skill:** [growth-and-profitability](/skills/growth-and-profitability)
+
+Collects the four key value-driver assumptions:
+
+| Assumption | What it controls |
+|------------|-----------------|
+| Revenue growth rate | Top-line trajectory over the high-growth period |
+| Target operating margin | Where EBIT margin converges by year 10 |
+| Margin convergence year | How quickly the margin transitions |
+| Sales-to-capital ratio | Reinvestment efficiency (revenue per dollar of invested capital) |
+
+Presents industry benchmarks and distribution statistics to help calibrate each assumption.
+
+**Output:** The four assumptions that drive the 10-year FCFF projection.
+
+---
+
+## Phase 7: DCF Model
+
+**Skill:** [fcff-model](/skills/fcff-model)
+
+The core engine. Takes all prior outputs and runs:
+
+1. **10-year FCFF projection** — year-by-year revenue, EBIT, after-tax operating income, reinvestment, and free cash flow
+2. **Terminal value** — perpetuity growth model using a stable growth rate and terminal cost of capital
+3. **Discounting** — present value of projected FCFFs + terminal value at WACC
+4. **Equity bridge** — operating value → subtract debt → add cash → subtract employee options → divide by shares outstanding → **value per share**
+
+Optional adjustments via [employee-options](/skills/employee-options) and [failure-rate](/skills/failure-rate).
+
+**Output:** Estimated value per share, full projection table, and equity bridge breakdown.
+
+---
+
+## After the model
+
+Two additional skills can run post-valuation:
+
+- [**diagnostics**](/skills/diagnostics) — Damodaran's 6-step sanity check: is the growth reasonable? Do the margins converge? Is reinvestment consistent with growth?
+- [**valuation-report**](/skills/valuation-report) — generates a formatted `.docx` report with all inputs, projections, and the equity bridge
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Skills Reference" icon="book" href="/skills/overview">
+    Detailed documentation for every skill
+  </Card>
+  <Card title="Data Pipeline" icon="database" href="/docs/data-pipeline">
+    How SEC EDGAR data flows through the system
+  </Card>
+</CardGroup>

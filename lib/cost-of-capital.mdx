@@ -1,0 +1,31 @@
+---
+title: "Cost of Capital"
+sidebarTitle: "cost_of_capital.py"
+description: "WACC computation engine implementing Damodaran's three methods."
+---
+
+## Module: `lib/cost_of_capital.py`
+
+Implements the three WACC computation methods from Damodaran's Cost of Capital worksheet.
+
+## Key functions
+
+### `wacc_detailed()`
+
+Bottom-up WACC from first principles: unlevered beta → re-lever → CAPM → synthetic rating → cost of debt → weighted average.
+
+### `wacc_industry()`
+
+Looks up industry average cost of capital from Damodaran's reference dataset.
+
+### `wacc_distribution()`
+
+Returns the company's WACC percentile within its industry — useful for sanity-checking the detailed estimate.
+
+### `synthetic_rating()`
+
+Maps interest coverage ratio to a bond rating and default spread using Damodaran's synthetic rating table.
+
+### `relever_beta()`
+
+Re-levers an unlevered beta for a specific debt/equity ratio and tax rate.

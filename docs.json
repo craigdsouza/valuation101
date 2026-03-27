@@ -1,0 +1,140 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Valuation101",
+  "theme": "mint",
+  "colors": {
+    "primary": "#1E40AF",
+    "light": "#3B82F6",
+    "dark": "#1E3A8A"
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.svg",
+  "tabs": [
+    {
+      "id": "docs",
+      "name": "Documentation",
+      "url": "docs"
+    },
+    {
+      "id": "skills",
+      "name": "Skills Reference",
+      "url": "skills"
+    },
+    {
+      "id": "lib",
+      "name": "Python Library",
+      "url": "lib"
+    }
+  ],
+  "navigation": {
+    "docs": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "docs/introduction",
+          "docs/getting-started",
+          "docs/how-it-works"
+        ]
+      },
+      {
+        "group": "Deep Dives",
+        "pages": [
+          "docs/data-pipeline",
+          "docs/methodology",
+          "docs/interpreting-results"
+        ]
+      },
+      {
+        "group": "Modes",
+        "pages": [
+          "docs/expert-mode",
+          "docs/novice-mode",
+          "docs/feeling-lucky"
+        ]
+      }
+    ],
+    "skills": [
+      {
+        "group": "Overview",
+        "pages": [
+          "skills/overview"
+        ]
+      },
+      {
+        "group": "Data Collection",
+        "pages": [
+          "skills/company-identifier",
+          "skills/identify-required-statements",
+          "skills/pull-raw-data",
+          "skills/parse-raw-data-to-filings",
+          "skills/last-twelve-months",
+          "skills/last-10-k"
+        ]
+      },
+      {
+        "group": "Valuation Engine",
+        "pages": [
+          "skills/cost-of-capital",
+          "skills/growth-and-profitability",
+          "skills/fcff-model"
+        ]
+      },
+      {
+        "group": "Adjustments",
+        "pages": [
+          "skills/r-and-d-converter",
+          "skills/lease-converter",
+          "skills/employee-options",
+          "skills/failure-rate"
+        ]
+      },
+      {
+        "group": "Orchestrator & Output",
+        "pages": [
+          "skills/fcff",
+          "skills/diagnostics",
+          "skills/valuation-report"
+        ]
+      }
+    ],
+    "lib": [
+      {
+        "group": "Python Library",
+        "pages": [
+          "lib/overview",
+          "lib/dcf-engine",
+          "lib/cost-of-capital",
+          "lib/adjustments",
+          "lib/equity-bridge",
+          "lib/data-loader"
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Substack",
+        "url": "https://valuation101.substack.com"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/craigdsouza/valuation101",
+      "x": "https://x.com/valuation101"
+    }
+  },
+  "contextual": {
+    "options": {
+      "claude": true,
+      "chatgpt": true
+    }
+  },
+  "seo": {
+    "indexHiddenPages": false
+  }
+}

@@ -1,0 +1,31 @@
+---
+title: "Python Library Overview"
+sidebarTitle: "Overview"
+description: "The deterministic math engine behind Valuation101 — pure Python, no AI dependencies."
+---
+
+## Architecture
+
+The Python library in `lib/` handles all mathematical computations. It is intentionally separated from the conversational layer (skills) so that:
+
+- **Every calculation is deterministic** — same inputs always produce the same outputs
+- **Everything is testable** — unit tests validate against Damodaran's reference spreadsheet
+- **No AI in the math** — the AI handles conversation; Python handles arithmetic
+
+## Modules
+
+| Module | Purpose | Key functions |
+|--------|---------|---------------|
+| [dcf_engine.py](/lib/dcf-engine) | FCFF projection, terminal value, discounting | `project_fcff()`, `terminal_value()`, `discount_to_present()` |
+| [cost_of_capital.py](/lib/cost-of-capital) | WACC computation (3 methods) | `wacc_detailed()`, `wacc_industry()`, `wacc_distribution()` |
+| [adjustments.py](/lib/adjustments) | R&D capitalization, lease conversion | `capitalize_rd()`, `convert_leases()` |
+| [equity_bridge.py](/lib/equity-bridge) | Operating value → equity per share | `equity_bridge()`, `option_value()` |
+| [data_loader.py](/lib/data-loader) | Load reference data from /data | `load_industry_averages()`, `load_erp_data()` |
+
+## Testing
+
+All modules are tested against the Almarai example pre-loaded in Damodaran's fcffsimpleginzu spreadsheet. Additional tests use real NVDA data to verify the SEC EDGAR pipeline end-to-end.
+
+```bash
+python -m pytest tests/ -v
+```

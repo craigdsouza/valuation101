@@ -1,0 +1,49 @@
+---
+title: "Identify Required Statements"
+sidebarTitle: "Required Statements"
+description: "Determine which SEC filings (10-K and 10-Q) are needed for the DCF valuation based on the valuation date."
+skill_id: identify-required-statements
+phase: 2
+inputs:
+  - Ticker
+  - Valuation date
+  - Fiscal year end date
+outputs:
+  - statements_required_{date}.json
+depends_on:
+  - company-identifier
+feeds_into:
+  - pull-raw-data
+  - parse-raw-data-to-filings
+---
+
+## What it does
+
+Determines which SEC filings are needed for the valuation based on the company's fiscal calendar and the valuation date. Returns a structured JSON file listing every 10-K and 10-Q the pipeline must process.
+
+## Output structure
+
+```json
+{
+  "company": "NVDA",
+  "valuation_date": "2026-02-22",
+  "fiscal_year_end": "01-26",
+  "statements_required": [
+    { "statement_type": "10-K", "fiscal_period_end": "2025-01-26", "role": "primary" },
+    { "statement_type": "10-K", "fiscal_period_end": "2024-01-28", "role": "prior_year" },
+    { "statement_type": "10-Q", "fiscal_period_end": "2025-10-26", "role": "bridge" },
+    { "statement_type": "10-Q", "fiscal_period_end": "2024-10-27", "role": "bridge_prior" }
+  ],
+  "bridge_quarters_needed": true
+}
+```
+
+## Why bridge quarters matter
+
+If the valuation date falls after the most recent 10-K, the model needs trailing-twelve-month (LTM) figures. These are computed by adding recent quarter data to the annual and subtracting the prior year's equivalent quarters. The `bridge` and `bridge_prior` filings make this calculation possible.
+
+## Edge cases
+
+- **Valuation date = 10-K filing date** — no bridge quarters needed; LTM equals the annual
+- **Fiscal year doesn't end in December** — the skill correctly handles non-calendar fiscal years (e.g., Apple's September FYE)
+- **Recent IPO** — if fewer than 4 quarters of data exist, the skill flags this and adjusts

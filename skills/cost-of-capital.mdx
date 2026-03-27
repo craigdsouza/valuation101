@@ -1,0 +1,66 @@
+---
+title: "Cost of Capital"
+sidebarTitle: "Cost of Capital"
+description: "Compute the Weighted Average Cost of Capital (WACC) using Damodaran's three methods."
+skill_id: cost-of-capital
+phase: 5
+inputs:
+  - LTM financial data
+  - Industry averages (beta, cost of capital)
+  - Risk-free rate
+  - Equity risk premium
+  - Bond rating or synthetic rating
+outputs:
+  - WACC (%) — detailed, industry average, and distribution
+  - Cost of equity (%)
+  - Cost of debt (%)
+  - Capital structure weights (debt/equity)
+depends_on:
+  - last-twelve-months
+  - last-10-k
+feeds_into:
+  - fcff-model
+---
+
+## What it does
+
+Computes WACC using three independent methods, mirroring the Cost of Capital worksheet in Damodaran's fcffsimpleginzu spreadsheet.
+
+## Method 1: Detailed (bottom-up)
+
+Builds WACC from first principles in 5 stages:
+
+### Stage 1: Beta
+Start with an **unlevered beta** from Damodaran's industry averages, then re-lever for the company's capital structure:
+
+$$\beta_{levered} = \beta_{unlevered} \times [1 + (1 - t) \times (D/E)]$$
+
+### Stage 2: Cost of Equity (CAPM)
+$$Cost\ of\ Equity = r_f + \beta \times ERP$$
+
+Four ERP sources available: manual input, country of incorporation, operating regions, or implied.
+
+### Stage 3: Cost of Debt
+Uses a **synthetic rating** based on interest coverage ratio (ICR):
+
+```
+ICR = EBIT / Interest Expense → Rating → Default Spread → Cost of Debt
+```
+
+The synthetic rating table maps ICR ranges to bond ratings and corresponding default spreads.
+
+### Stage 4: Capital Structure
+Market-value weights:
+- Equity = shares × current price
+- Debt = book value of debt (approximation for market value)
+
+### Stage 5: WACC
+$$WACC = \frac{E}{E+D} \times r_e + \frac{D}{E+D} \times r_d \times (1-t)$$
+
+## Method 2: Industry Average
+
+Looks up the company's industry in Damodaran's dataset and returns the industry average cost of capital directly.
+
+## Method 3: Distribution
+
+Shows where the company's WACC falls on the industry-wide distribution (percentile ranking). Useful for sanity-checking the detailed estimate.

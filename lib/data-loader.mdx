@@ -1,0 +1,20 @@
+---
+title: "Data Loader"
+sidebarTitle: "data_loader.py"
+description: "Load Damodaran's reference datasets from the /data directory."
+---
+
+## Module: `lib/data_loader.py`
+
+Loads and caches the reference datasets used throughout the valuation.
+
+## Reference data
+
+| File | Contents | Refresh cycle |
+|------|----------|---------------|
+| `country_erp.json` | Country equity risk premiums | January (annual) |
+| `industry_averages_us.csv` | US industry betas, cost of capital, EV/Sales | January (annual) |
+| `industry_averages_global.csv` | Global equivalents | January (annual) |
+| `synthetic_rating_spreads.json` | ICR → rating → default spread tables | Infrequent |
+
+All datasets are sourced from [Damodaran's data pages](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/data.html).

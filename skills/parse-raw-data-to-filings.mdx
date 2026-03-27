@@ -1,0 +1,42 @@
+---
+title: "Parse Raw Data to Filings"
+sidebarTitle: "Parse to Filings"
+description: "Transform the raw XBRL companyfacts.json into structured per-filing JSON files for downstream valuation skills."
+skill_id: parse-raw-data-to-filings
+phase: 3
+inputs:
+  - companyfacts.json
+  - statements_required_{date}.json
+outputs:
+  - company-facts-keys.json (XBRL tag inventory)
+  - csv/{tag}.csv (one per relevant tag)
+  - "{form}_{period_end}_raw.json" (one per required filing)
+depends_on:
+  - pull-raw-data
+  - identify-required-statements
+feeds_into:
+  - last-twelve-months
+  - last-10-k
+---
+
+## What it does
+
+Produces three artifacts in sequence:
+
+1. **company-facts-keys.json** — a full inventory of every XBRL tag available for the company, with metadata (taxonomy, units, observation count)
+2. **csv/ folder** — one CSV per valuation-relevant XBRL tag, showing all reported observations across all filings
+3. **Per-filing _raw.json files** — one per 10-K or 10-Q in the required statements list, each containing every relevant financial field as a single unsummed value with its source tag, period, and accession number
+
+## Why per-filing extraction matters
+
+The raw companyfacts.json contains thousands of observations across dozens of filings. This skill filters to just the filings the valuation needs and extracts exactly one value per financial concept per filing — resolving tag ambiguity, handling dimensional data, and ensuring no double-counting.
+
+## Tag ambiguity resolution
+
+Companies use different XBRL tags for the same concept. For example, revenue might appear as:
+
+- `Revenues`
+- `RevenueFromContractWithCustomerExcludingAssessedTax`
+- `RevenueFromContractWithCustomerIncludingAssessedTax`
+
+The extraction logic selects the most appropriate tag based on recency, specificity, and consistency with other filings. Every extracted value records its source tag for traceability.

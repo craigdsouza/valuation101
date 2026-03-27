@@ -1,0 +1,42 @@
+---
+title: "Growth & Profitability"
+sidebarTitle: "Growth & Profitability"
+description: "Set the four key value-driver assumptions for the DCF projection."
+skill_id: growth-and-profitability
+phase: 5
+inputs:
+  - LTM financial data
+  - Industry benchmarks
+outputs:
+  - Revenue growth rate
+  - Target operating margin
+  - Margin convergence year
+  - Sales-to-capital ratio
+depends_on:
+  - last-twelve-months
+  - cost-of-capital
+feeds_into:
+  - fcff-model
+---
+
+## What it does
+
+Collects and validates the four assumptions that drive the 10-year FCFF projection. For each assumption, the skill presents historical data, industry benchmarks, and distribution statistics to help calibrate.
+
+## The four assumptions
+
+| Assumption | Maps to | What it controls |
+|------------|---------|-----------------|
+| Revenue growth rate | Input sheet row 26 | Top-line trajectory during high-growth period |
+| Target operating margin | Input sheet row 28 | Where EBIT margin converges by the target year |
+| Margin convergence year | Input sheet row 29 | How quickly margins transition to the target |
+| Sales-to-capital ratio | Input sheet row 32 | Reinvestment efficiency — revenue per dollar of invested capital |
+
+## How assumptions interact
+
+These four numbers together determine every line in the 10-year projection:
+
+- **Revenue** = prior year × (1 + growth rate), declining linearly toward stable growth
+- **EBIT** = revenue × operating margin (converging from current to target)
+- **Reinvestment** = revenue change / sales-to-capital ratio
+- **FCFF** = EBIT × (1 − tax rate) − reinvestment

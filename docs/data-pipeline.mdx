@@ -1,0 +1,71 @@
+---
+title: "Data Pipeline"
+sidebarTitle: "Data Pipeline"
+description: "How SEC EDGAR XBRL data flows from raw API response to structured valuation inputs."
+---
+
+## Overview
+
+The data pipeline transforms a raw SEC EDGAR API response into the exact financial inputs that Damodaran's fcffsimpleginzu Input sheet requires. The entire pipeline is deterministic — given the same company and valuation date, it produces identical outputs every time.
+
+```
+[1] identify-required-statements
+        ↓ statements_required_{date}.json
+[2] pull-raw-data
+        ↓ companyfacts.json (5–15 MB)
+[3] parse-raw-data-to-filings
+        ↓ company-facts-keys.json
+        ↓ csv/{tag}.csv
+        ↓ {form}_{period_end}_raw.json
+[4] last-twelve-months
+        ↓ ltm_{date}.json → Damodaran Input sheet column B
+[5] last-10-k
+        ↓ last_10k_{date}.json → Damodaran Input sheet column C
+```
+
+Steps 2 and 3 are skipped entirely if all required `_raw.json` files are already cached.
+
+## Data source
+
+The SEC EDGAR XBRL API provides every fact a company has ever filed:
+
+```
+GET https://data.sec.gov/api/xbrl/companyfacts/CIK{padded_cik}.json
+```
+
+This returns all reported concepts across all filing dates, form types, and periods under US-GAAP, DEI, and other XBRL taxonomies. It is the single authoritative source for all financial data in this pipeline.
+
+<Warning>
+  SEC requires a `User-Agent` header identifying the caller. The plugin sends `ValuationPlugin admin@example.com` per SEC policy.
+</Warning>
+
+## Caching strategy
+
+All fetched and parsed data is cached per-ticker at `data/cache/{TICKER}/`:
+
+| File | Created by | Reuse rule |
+|------|-----------|------------|
+| `companyfacts.json` | pull-raw-data | Refreshed if older than 24 hours |
+| `companyfacts_fetched.txt` | pull-raw-data | Timestamp of last fetch |
+| `statements_required_{date}.json` | identify-required-statements | One per valuation date |
+| `company-facts-keys.json` | parse-raw-data-to-filings | Refreshed with companyfacts |
+| `csv/{tag}.csv` | parse-raw-data-to-filings | Refreshed with companyfacts |
+| `{form}_{period}_raw.json` | parse-raw-data-to-filings | Immutable once created |
+| `ltm_{date}.json` | last-twelve-months | One per valuation date |
+| `last_10k_{date}.json` | last-10-k | One per valuation date |
+
+## XBRL tag selection
+
+Not every XBRL tag in the companyfacts response is relevant to a DCF valuation. The pipeline filters to valuation-relevant tags and handles the fact that companies use different tags for the same concept (e.g., `Revenues` vs `RevenueFromContractWithCustomerExcludingAssessedTax`).
+
+The tag selection logic is documented in each per-filing `_raw.json` file — every extracted value includes the source tag, period, and SEC accession number for full traceability.
+
+## LTM computation
+
+Trailing-twelve-month figures are computed differently depending on the line item type:
+
+- **Income statement items** (revenue, operating income, etc.): `Annual + Current Bridge Quarters − Prior Year Bridge Quarters`
+- **Balance sheet items** (assets, debt, equity): Most recent quarter-end snapshot (no summing)
+- **Derived items** (book value of equity, effective tax rate): Computed from the assembled components
+
+This mirrors how Damodaran assembles LTM data in his spreadsheet.

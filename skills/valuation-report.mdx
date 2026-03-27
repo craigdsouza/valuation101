@@ -1,0 +1,31 @@
+---
+title: "Valuation Report"
+sidebarTitle: "Valuation Report"
+description: "Generate a professional .docx valuation report from a completed FCFF valuation run."
+skill_id: valuation-report
+phase: 7
+inputs:
+  - Completed valuation output
+  - Run transcript
+outputs:
+  - Formatted .docx report
+depends_on:
+  - fcff-model
+feeds_into: []
+---
+
+## What it does
+
+Generates a multi-chapter Word document (`.docx`) summarizing the complete valuation. Includes an executive summary, input assumptions, projection tables, equity bridge, and diagnostic findings.
+
+## Report sections
+
+1. **Executive TLDR** — company, valuation date, estimated value per share, current price, implied upside/downside
+2. **Company overview** — identity, sector, fiscal year, filing dates used
+3. **Financial snapshot** — LTM and last 10-K data in tabular form
+4. **Cost of capital** — WACC breakdown with all three methods shown
+5. **Growth assumptions** — the four value drivers with industry context
+6. **10-year projection** — year-by-year revenue, EBIT, FCFF table
+7. **Equity bridge** — operating value to equity value per share
+8. **Diagnostics** — the 6-point checklist results
+9. **Appendix** — data sources, XBRL tags used, cache timestamps

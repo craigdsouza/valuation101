@@ -1,0 +1,34 @@
+---
+title: "R&D Converter"
+sidebarTitle: "R&D Converter"
+description: "Capitalize R&D expenses into a research asset, adjusting EBIT and invested capital for the DCF model."
+skill_id: r-and-d-converter
+phase: 5
+inputs:
+  - R&D expense (current and historical)
+  - Amortization period (industry-specific)
+outputs:
+  - Adjusted EBIT (higher — R&D removed from expenses, amortization added)
+  - Research asset value (capitalized R&D)
+  - Adjusted invested capital
+depends_on:
+  - last-twelve-months
+feeds_into:
+  - cost-of-capital
+  - fcff-model
+---
+
+## What it does
+
+Treats R&D spending as investment rather than operating expense. This is Damodaran's standard adjustment for companies with material R&D — it increases reported EBIT (and invested capital) to better reflect the company's true earning power and asset base.
+
+## When to use
+
+Auto-detected in Feeling Lucky mode when R&D exceeds 5% of revenue. In Expert mode, the user decides.
+
+## The adjustment
+
+1. Capitalize recent R&D expenses over an amortization period (typically 3–5 years depending on industry)
+2. Create a "research asset" = sum of unamortized R&D
+3. Adjust EBIT: add back current R&D expense, subtract amortization of the research asset
+4. Adjust invested capital: add the research asset to book value

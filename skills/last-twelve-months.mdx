@@ -1,0 +1,52 @@
+---
+title: "Last Twelve Months"
+sidebarTitle: "LTM"
+description: "Compute trailing-12-month financials from SEC filings for Damodaran's Input sheet column B."
+skill_id: last-twelve-months
+phase: 4
+inputs:
+  - Per-filing _raw.json files (primary 10-K + bridge 10-Qs)
+outputs:
+  - "ltm_{date}.json mapped to Damodaran Input sheet cells B11–B23"
+depends_on:
+  - parse-raw-data-to-filings
+feeds_into:
+  - cost-of-capital
+  - growth-and-profitability
+  - fcff-model
+---
+
+## What it does
+
+Combines annual 10-K data with quarterly 10-Q bridge filings to produce trailing-twelve-month figures. The output maps directly to column B of Damodaran's fcffsimpleginzu Input sheet.
+
+## LTM computation logic
+
+**Income statement items** (revenue, operating income, interest expense, etc.):
+```
+LTM = Annual (10-K) + Current Bridge Quarter(s) − Prior Year Bridge Quarter(s)
+```
+
+**Balance sheet items** (total debt, cash, shares outstanding, etc.):
+```
+LTM = Most recent quarter-end snapshot (no summing)
+```
+
+**Derived items** (book value of equity, effective tax rate):
+```
+Computed from the assembled components
+```
+
+## Output fields
+
+| Field | Damodaran cell | Description |
+|-------|---------------|-------------|
+| revenues | B11 | Total revenue (LTM) |
+| operating_income | B12 | Operating income / EBIT (LTM) |
+| interest_expense | B13 | Interest expense (LTM) |
+| book_value_equity | B14 | Shareholders' equity (latest) |
+| book_value_debt | B15 | Total interest-bearing debt (latest) |
+| cash | B18 | Cash and short-term investments (latest) |
+| shares_outstanding | B19 | Diluted shares outstanding |
+| current_stock_price | B20 | Market price per share |
+| effective_tax_rate | B21 | Computed from provision / pre-tax income |
