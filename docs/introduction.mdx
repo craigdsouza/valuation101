@@ -18,10 +18,10 @@ The plugin is built on [Aswath Damodaran's fcffsimpleginzu spreadsheet](https://
 
 ## How is it built?
 
-The plugin is a bundle of 16 skills backed by a deterministic Python library:
+The plugin is a bundle of 19 skills backed by a deterministic Python library of 12 modules:
 
-- **Skills** handle the conversation — they know what to ask, when to fetch data, and how to present results
-- **Python library** (`lib/`) handles the math — WACC computation, DCF projection, terminal value, equity bridge
+- **Skills** handle the conversation — they know what to ask, when to fetch data, and how to present results. This includes fetching earnings call transcripts for management guidance, computing trailing financials, and generating case study write-ups.
+- **Python library** (`lib/`) handles the math — WACC computation, DCF projection, convergence curve shapes, terminal value, equity bridge, option valuation, and failure rate estimation
 - **Data pipeline** fetches live SEC EDGAR XBRL data, so valuations use real financial statements, not stale estimates
 
 <Info>
@@ -40,7 +40,8 @@ graph LR
     E --> G[last-10-k]
     F --> H[cost-of-capital]
     G --> H
-    H --> I[growth-and-profitability]
+    H --> EG[earnings-guidance]
+    EG --> I[growth-and-profitability]
     I --> J[fcff-model]
     J --> K[diagnostics]
     K --> L[Value per share]
@@ -52,7 +53,7 @@ graph LR
   <Card title="Getting Started" icon="rocket" href="/docs/getting-started">
     Install and run your first valuation
   </Card>
-  <Card title="How It Works" icon="gears" href="/docs/how-it-works">
-    Deep dive into the 7-phase pipeline
+  <Card title="How a Valuation is Performed" icon="gears" href="/docs/how-it-works">
+    Deep dive into the 8-phase pipeline
   </Card>
 </CardGroup>

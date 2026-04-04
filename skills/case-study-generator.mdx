@@ -1,0 +1,80 @@
+---
+title: "Case Study Generator"
+sidebarTitle: "Case Study Generator"
+description: "Generate a Mintlify MDX case study page from a completed FCFF valuation run — with data tables, convergence charts, and narrative commentary."
+---
+
+{/* Agent-parseable skill metadata
+skill_id: case-study-generator
+phase: post
+inputs: [completed valuation spreadsheet (.xlsx), ticker]
+outputs: [MDX case study page, SVG convergence charts, updated docs.json]
+depends_on: [fcff-model (completed run)]
+feeds_into: []
+*/}
+
+## What it does
+
+Generates a publication-ready case study for the [Valuation101 docs site](/case-studies/case-study-guide) from a completed valuation run. Each case study is both a demonstration of the plugin's capabilities and a teaching tool that walks readers through every phase of the valuation.
+
+This skill is **standalone** — it is never called by the fcff orchestrator. Invoke it directly after completing a valuation.
+
+## Two-pass workflow
+
+Case studies are built in two passes:
+
+1. **Pass 1 — Scaffold:** A Python script reads the valuation spreadsheet and generates an MDX file with all data tables pre-populated and narrative markers (`{/*NARRATIVE: section_name */}`) where commentary belongs.
+2. **Pass 2 — Narrate:** The AI reads the scaffold, replaces every narrative marker with company-specific commentary, generates SVG convergence charts, searches for reference links, and updates the docs site configuration.
+
+## Data source
+
+The valuation spreadsheet (`.xlsx`) is the **single source of truth** for all numbers. If a `_manual_override.xlsx` variant exists in the run directory, it is preferred — it contains the user's final adjustments.
+
+## Prerequisites
+
+A completed valuation run with a spreadsheet present in the run directory:
+
+- `{TICKER}-valuation-{DATE}-{SEQ}.xlsx` (base), or
+- `{TICKER}-valuation-{DATE}-{SEQ}_manual_override.xlsx` (preferred)
+
+The spreadsheet must have been last saved in Excel so that formula cells have cached results readable by openpyxl.
+
+## Case study structure
+
+Every case study follows the same section structure (matching the [CoreWeave example](/case-studies/coreweave)):
+
+1. Introduction and manual overrides
+2. Company identification and industry mapping
+3. Required filings
+4. Trailing twelve-month financials (with data gap analysis)
+5. Shares outstanding
+6. Tax rates
+7. Cost of capital (beta, cost of equity, cost of debt, WACC)
+8. Forecasts (guidance review, revenue growth, operating margin, sales-to-capital, cost of capital convergence)
+9. Employee stock options
+10. DCF model output (projection table, terminal value, PV breakdown, equity bridge)
+11. The verdict (bear case, bull case)
+12. Diagnostic flags
+13. What this case study demonstrates
+14. References
+
+## Convergence charts
+
+Four SVG charts are generated per case study, showing the 10-year convergence curves for each forecast variable:
+
+- Revenue growth (exponential/linear decay)
+- Operating margin (S-curve or linear expansion)
+- Sales-to-capital ratio (step-down or linear convergence)
+- Cost of capital (exponential decay from WACC to terminal)
+
+Charts use data points directly from the spreadsheet's 10-year projection schedule.
+
+## How to use
+
+```
+"Generate a case study for NVDA"
+"Create case study for CoreWeave"
+"Add Tesla to the case studies"
+```
+
+The skill will find the latest completed run, confirm the spreadsheet with you, generate the scaffold, write the narrative, create charts, and update `docs.json` automatically.

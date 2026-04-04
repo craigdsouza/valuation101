@@ -1,0 +1,50 @@
+---
+title: "Failure Rate"
+sidebarTitle: "failure_rate.py"
+description: "Estimate the probability of corporate failure using bond ratings or company age."
+---
+
+## Module: `lib/failure_rate.py`
+
+Estimates the cumulative probability that a company fails (defaults) over the 10-year projection period. This probability is used to adjust the final DCF value downward.
+
+## How it's applied
+
+$$\text{Adjusted value} = \text{DCF value} \times (1 - \text{failure probability}) + \text{distress proceeds} \times \text{failure probability}$$
+
+Distress proceeds are typically estimated as a percentage of book value (default: 50% of book assets, though this varies by industry).
+
+## Key functions
+
+### `failure_rate_by_rating(rating, horizon=10)`
+
+Uses historical cumulative default rates from Moody's and S&P, indexed by credit rating.
+
+**Parameters:**
+- `rating` — synthetic or actual credit rating (e.g., "BBB", "B+", "CCC")
+- `horizon` — years over which to measure default probability (default: 10)
+
+**Returns:** Cumulative default probability as a decimal.
+
+### `failure_rate_by_age(company_age, sector)`
+
+Uses Bureau of Labor Statistics business survival data, indexed by company age and sector.
+
+**Parameters:**
+- `company_age` — years since founding or incorporation
+- `sector` — broad industry sector
+
+**Returns:** Estimated failure probability over 10 years.
+
+## Which method to use
+
+| Situation | Recommended method |
+|-----------|-------------------|
+| Company has a credit rating or sufficient data for synthetic rating | `failure_rate_by_rating` |
+| Company is young, unrated, or pre-revenue | `failure_rate_by_age` |
+| Company is a large, stable, investment-grade firm | Failure probability is typically near zero — can be skipped |
+
+## Data sources
+
+- `rating_default_probabilities.json` — Moody's/S&P historical cumulative defaults by rating over 1–10 year horizons
+- `bls_survival_rates.json` — US Bureau of Labor Statistics corporate failure rates by sector and age (5-year, 10-year)

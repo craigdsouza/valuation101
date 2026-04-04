@@ -1,20 +1,66 @@
 ---
 title: "Data Loader"
-sidebarTitle: "data_loader.py"
-description: "Load Damodaran's reference datasets from the /data directory."
+sidebarTitle: "lookup.py"
+description: "Load Damodaran's reference datasets efficiently — returns only the relevant row instead of the full file."
 ---
 
-## Module: `lib/data_loader.py`
+## Module: `lib/lookup.py`
 
-Loads and caches the reference datasets used throughout the valuation.
+Loads and queries the reference datasets used throughout the valuation. Designed for token efficiency — returns only the single relevant row (~200 tokens) instead of loading full files (~35K tokens).
+
+## Key functions
+
+### `get_industry()`
+
+Look up industry averages for a given industry name and region.
+
+**Parameters:**
+- `industry_name` — canonical Damodaran industry name (e.g., "Software (Internet)")
+- `region` — `'US'` or `'Global'`
+
+**Returns:** Dictionary with `revenue_growth_5y`, `pretax_operating_margin`, `sales_to_capital`, `aftertax_roc`, `cost_of_capital`, `beta`, `std_dev`.
+
+### `get_distribution()`
+
+Look up quartile distributions for an industry (Q1, median, Q3).
+
+**Parameters:**
+- `industry_name` — canonical Damodaran industry name
+
+**Returns:** Nested dictionary with distribution stats for `revenue_growth_3y`, `pretax_operating_margin`, `sales_to_capital`. Returns `None` if distribution data is not available for the industry.
+
+### `get_country_erp()`
+
+Look up equity risk premium for a given country.
+
+**Parameters:**
+- `country` — country name (e.g., "United States", "India")
+
+**Returns:** Dictionary with `equity_risk_premium`, `country_risk_premium`, `rating`.
+
+### `get_industry_by_ticker()`
+
+Look up which Damodaran industry a ticker belongs to.
+
+**Parameters:**
+- `ticker` — stock ticker symbol
+
+**Returns:** Industry name string.
 
 ## Reference data
 
-| File | Contents | Refresh cycle |
-|------|----------|---------------|
-| `country_erp.json` | Country equity risk premiums | January (annual) |
-| `industry_averages_us.csv` | US industry betas, cost of capital, EV/Sales | January (annual) |
-| `industry_averages_global.csv` | Global equivalents | January (annual) |
-| `synthetic_rating_spreads.json` | ICR → rating → default spread tables | Infrequent |
+| File | Contents | Size | Refresh cycle |
+|------|----------|------|---------------|
+| `country_erp.json` | Country equity risk premiums (192 countries) | 43 KB | January (annual) |
+| `industry_averages_us.json` | US industry stats (96 industries): growth, margins, betas, ROIC | 85 KB | January (annual) |
+| `industry_averages_global.json` | Global equivalents | 86 KB | January (annual) |
+| `input_stat_distributions.json` | Quartile distributions for benchmarking | 87 KB | January (annual) |
+| `indname_us.json` | ~6,000 US companies → industry classification | 1.9 MB | January (annual) |
+| `synthetic_rating_spreads.json` | ICR → rating → default spread tables | 3.7 KB | Infrequent |
+| `rating_default_probabilities.json` | Moody's/S&P cumulative default rates | 1.7 KB | Infrequent |
+| `bls_survival_rates.json` | Corporate failure rates by sector + age | 1.5 KB | Infrequent |
+| `rd_amortization_by_industry.json` | R&D useful life by industry (2–10 years) | 3.2 KB | Infrequent |
+| `wacc_distribution_percentiles.json` | WACC decile distribution by region | 1.4 KB | Infrequent |
+| `xbrl_ticker_overrides.json` | Manual XBRL tag overrides for edge cases | 1.7 KB | As needed |
 
-All datasets are sourced from [Damodaran's data pages](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/data.html).
+All datasets are sourced from [Damodaran's data pages](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/data.html) (January 2026 update).

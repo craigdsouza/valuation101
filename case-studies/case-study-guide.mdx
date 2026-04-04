@@ -1,0 +1,244 @@
+---
+title: "Case Study Guide"
+sidebarTitle: "How to Read a Case Study"
+description: "A section-by-section guide to the valuation pipeline — what each phase does, how the plugin makes decisions, and what to look for in the output."
+---
+
+Each case study on this site walks through a complete Damodaran-style FCFF (Free Cash Flow to Firm) intrinsic valuation produced by the plugin. The sections follow the same order every time, mirroring the pipeline's execution sequence. This guide explains what each section does generically — the case studies themselves show only the company-specific data and commentary.
+
+## Manual Overrides
+
+While the pipeline is designed to be fully deterministic — pulling data from SEC filings and guidance from earnings calls — in some cases the default judgment has to be overruled manually. When this happens, the override is documented explicitly in the case study, stating the default figure, the manually assigned figure, and the reason for the change.
+
+Overrides are rare by design. The most common trigger is a data gap in SEC XBRL filings (e.g. shares outstanding for a recent IPO where the standard tags aren't populated yet). The override declaration sits at the top of each case study so readers can see upfront which inputs were changed by hand.
+
+## Company Identification
+
+The `company-identifier` skill takes whatever the user typed — a ticker, a name, or a partial name — and resolves it to a single confirmed identity in two steps. First, a web search matches the input to a public company and surfaces its SEC CIK number (visible in EDGAR page URLs and search results). With the CIK in hand, the skill calls SEC EDGAR's submissions API (`data.sec.gov/submissions/CIK{cik}.json`) to pull structured metadata: legal name, SIC code, fiscal year end, exchange, and filing history in one call.
+
+### Industry Mapping
+
+Getting the industry right matters — downstream skills use Damodaran's 96 canonical industry names to look up unlevered betas, target operating margins, reinvestment rates, and cost of capital. An inappropriate classification cascades through the entire valuation.
+
+The plugin looks up the ticker directly in Damodaran's [**indname**](https://www.stern.nyu.edu/~adamodar/pc/datasets/indname.xls) dataset, which covers roughly 48,000 global public companies with his own assigned industry classifications, of which ~6,000 are US public companies. For the purposes of valuation, this is more reliable than directly using SEC-assigned Industry Categories.
+
+If you feel your company is assigned to the wrong industry, you can (1) browse through the industry file to choose a more appropriate category, or (2) directly change inputs instead of trying to choose the right industry category.
+
+## Required Filings
+
+The `identify-required-statements` skill, based on the date the valuation is being performed, assesses which 10-K (annual) and 10-Q (quarterly) filings are needed to obtain the most recent twelve months of financial data. If the most recent 10-K is fresh enough, only annual filings are needed (`annual_only` method). If the fiscal year ended more than one quarter ago, the skill identifies bridge 10-Q filings to construct a trailing twelve-month view.
+
+## Trailing Twelve-Month Financials
+
+The Last Twelve Months (LTM) figures form the base year for the entire DCF projection. The plugin extracts these from SEC XBRL filings, combining annual and quarterly data as needed. Each metric is sourced from specific XBRL tags, with fallback hierarchies when the primary tag is unavailable.
+
+The case study tables show LTM values alongside prior-year comparisons so readers can see the year-over-year trajectory. Below each table, data gaps and warnings are listed — these are fields where the XBRL data was null or required fallback resolution. The analyst commentary explains which gaps matter for the valuation and which are immaterial.
+
+## Shares Outstanding
+
+Shares outstanding is the denominator in the entire valuation — the DCF model produces an aggregate equity value for the firm, and dividing by shares outstanding converts it into the per-share intrinsic value that gets compared against the market price. Getting this number wrong scales the entire output proportionally, so the plugin invests significant effort in resolving it accurately.
+
+The plugin attempts to extract shares outstanding from SEC XBRL filings, searching for the `CommonStockSharesOutstanding` tag first, then falling back through a hierarchy of alternatives: `EntityCommonStockSharesOutstanding`, `WeightedAverageNumberOfDilutedSharesOutstanding`, and `WeightedAverageNumberOfShareOutstandingBasicAndDiluted`. 
+
+When the company has multiple share classes (e.g. Class A and Class B common stock), the plugin sums across all classes using the `CommonStockSharesOutstanding` tag with distinct `us-gaap:StatementClassOfStockAxis` members. If the XBRL tags are unavailable — common for recent IPOs where filing history is thin — the plugin can fall back to deriving shares from market capitalisation and stock price, or from the 10-K cover page share count obtained via web search.
+
+The choice between basic and diluted shares matters. Basic shares count only currently issued stock; diluted shares add the effect of in-the-money options, unvested RSUs, and convertible instruments. The plugin uses diluted shares as the denominator because the DCF model separately computes employee stock option value (via Black-Scholes) and subtracts it in the equity bridge — using basic shares here and option-adjusted equity above avoids double-counting dilution. When diluted shares aren't available, the plugin uses basic shares and flags the potential undercount.
+
+$$\text{Value per share} = \frac{\text{Equity value after adjustments}}{\text{Shares outstanding}}$$
+
+## Tax Rates
+
+Tax rates matter in a DCF because they determine how much of a company's operating income actually becomes free cash flow. The plugin works with two distinct tax rates, each serving a different purpose.
+
+**Effective tax rate** is what the company actually paid in taxes over the trailing twelve months, calculated as income tax expense divided by pretax income. It reflects the company's current tax reality — including the effects of tax credits, deductions, loss carryforwards (NOLs), foreign tax differences, and other items that cause taxes paid to differ from the statutory rate. The plugin extracts this directly from SEC filings. When pretax income is negative, the effective tax rate is undefined and the plugin sets it to null.
+
+**Marginal tax rate** is the statutory rate the company would pay on an additional dollar of taxable income — 25% for US corporations. This is the rate that matters for evaluating new investments, because it determines the tax shield on incremental interest payments and the after-tax cost of capital. The plugin uses the marginal tax rate when computing the cost of debt (the `$(1 - t)$` term in WACC) and for the after-tax EBIT calculation during the projection period.
+
+**Where each rate is used:**
+
+- **Cost of capital:** The marginal tax rate is used to compute the after-tax cost of debt and to re-lever beta. This is by design — WACC should reflect the tax benefit of debt at the margin, not the company's current blended tax situation.
+- **Projection years 1–10:** The effective tax rate applies to EBIT in the early years, gradually converging toward a terminal rate. If the effective rate is null (as when the company is loss-making), the marginal rate is used from year one.
+- **Terminal year:** The tax rate converges to the industry average effective tax rate, reflecting the expectation that as companies mature, their tax positions normalize toward their industry's typical level. If the industry average is unavailable, the model falls back to the 25% marginal rate.
+- **NOL shielding:** If the company carries net operating losses, the plugin shields taxable income from taxes until the NOL balance is exhausted. This means the effective tax rate in early projection years may be zero even if the stated rate is positive.
+
+## Cost of Capital (WACC)
+
+The cost of capital is the minimum return a company needs to earn on its investments to satisfy both its shareholders and its lenders. It serves as the "hurdle rate" for the entire valuation — future cash flows are discounted at this rate to determine what they're worth today.
+
+### Beta Estimation
+
+Beta measures how much a stock's price tends to move relative to the overall market. A beta of 1.0 means the stock moves in lockstep with the market; above 1.0 means it's more volatile, below 1.0 means it's calmer. The more volatile a company's stock is the greater the return demanded by equity investors.
+
+A company's stock can be risky for two distinct reasons.
+
+- **Operating risk** comes from the nature of the business itself — a semiconductor company's revenues swing more than a utility's, regardless of how either is financed. **Unlevered beta** isolates just the operating risk by mathematically stripping out the effect of debt. Think of it as asking: "how risky is this *business*, ignoring how it's funded?" Since companies in the same industry face similar operating risks, we use the industry-average unlevered beta as a starting point — it's more stable than any single company's estimate.
+
+- **Financial leverage risk** comes from debt — borrowing amplifies both gains and losses for shareholders, like buying a house with a mortgage and 10% investment (down payment) means a 10% rise in home value might be a 100% gain on your investment, but a 10% drop could wipe it out. **Levered beta** addresses this by adding back the financial leverage specific to *this* company, reflecting the total risk that equity investors actually bear. A company with more debt will always have a higher levered beta than its unlevered beta, because shareholders are absorbing the amplified ups and downs that come with borrowing.
+
+$$\beta_{levered} = \beta_{unlevered} \times (1 + (1 - t) \times D/E)$$
+
+The D/E ratio used here is based on market values, not book values. Book value of debt and equity are accounting figures from the balance sheet — they reflect historical costs and retained earnings, not what investors are actually paying today. Market values are forward-looking and reflect the current price of each claim on the company's cash flows.
+
+- **Market value of debt:** Since most corporate debt isn't publicly traded, the pipeline converts book debt to market value using a bond-pricing formula — treating all of the company's debt as a single bond, discounting its future interest payments and principal repayment at the pre-tax cost of debt. Operating lease obligations are added at book value as a proxy. This mirrors Damodaran's spreadsheet approach and can differ meaningfully from book value when interest rates or credit spreads have shifted significantly since the debt was issued.
+
+$$MV_{debt} = C \times \frac{1 - (1+r)^{-n}}{r} + \frac{Face}{(1+r)^n}$$
+
+  where $C$ = annual interest expense, $r$ = pre-tax cost of debt, $n$ = average debt maturity (years), $Face$ = book value of straight debt.
+
+- **Market value of equity:** This is simply the current stock price multiplied by shares outstanding — the market capitalisation. Unlike debt, equity is traded continuously, so the market value is directly observable.
+
+$$D/E = \frac{\text{Market value of debt}}{\text{Stock price} \times \text{Shares outstanding}}$$
+
+### Cost of Equity
+
+The cost of equity is the return that shareholders expect for investing in the stock. It's built up from a risk-free baseline (government bond yields) plus a premium for taking on the risk of owning equities in general, and this company's equities in particular.
+
+$$K_e = R_f + \beta_{levered} \times ERP$$
+
+### Cost of Debt
+
+The cost of debt is the interest rate a company effectively pays on its borrowings, adjusted for the tax deduction on interest. Companies that are more likely to default pay higher rates, so this number reflects how risky lenders think the company is.
+
+Three concepts chain together to determine cost of debt:
+
+- **Interest coverage ratio (ICR):** How many times over a company's operating income can cover its annual interest payments. An ICR of 5x means the company earns five times what it owes in interest — comfortable. Below 1x means it can't cover interest from operations alone.
+
+- **Synthetic credit rating:** The ICR maps to a credit rating using Damodaran's lookup table, which mimics what agencies like Moody's and S&P do. Higher coverage earns a safer rating (AAA, AA, A); lower coverage gets a riskier one (BB, B, CCC, down to D for default).
+
+- **Default spread:** Each rating carries an extra interest rate that lenders charge above the risk-free rate to compensate for the chance they won't get paid back. A AAA-rated company might pay just 0.5% above the risk-free rate; a D-rated company could pay 15–20% or more.
+
+$$K_d = (R_f + \text{default spread}) \times (1 - t)$$
+
+### Weighted Average
+
+WACC blends the cost of equity and the cost of debt in proportion to how much of each the company uses. It's the single discount rate applied to all future cash flows in the DCF model — a higher WACC means future cash flows are worth less today.
+
+$$WACC = W_e \times K_e + W_d \times K_d \times (1 - t)$$
+
+## Forecasts
+
+Every DCF valuation is a story told in four variables: how fast revenue grows, how profitable it becomes, how efficiently capital is reinvested, and what return investors demand for bearing the risk. The plugin anchors each variable in two places — the company's current reality (the "base year") and a terminal target that reflects where the business should converge at maturity — then draws a curve between them.
+
+The convergence path between start and target is not assumed to be linear. The plugin's curve library offers six S-shaped (and related) convergence functions, each calibrated for a different company lifecycle pattern. A rules-based classifier — or, optionally, an LLM-based classifier that considers narrative context — selects the curve shape for each variable based on the gap between the current value and the target, the company's growth phase, and the nature of the variable.
+
+### Guidance Review
+
+By default, the plugin derives its Year 1 forecast anchors from the trailing twelve months of SEC filings — the most recent hard numbers available. But historical financials are backward-looking; they tell you where the company has been, not where management expects it to go. Earnings guidance bridges this gap.
+
+After extracting LTM financials, the plugin searches for the most recent earnings call transcript by walking backward from the latest filing quarter (up to four quarters). If a transcript is found, it runs a structured LLM extraction pass that pulls out revenue guidance (explicit annual figures, quarterly sums, or exit run-rate interpolations), operating margin targets (both near-term and long-term), capex plans, and any qualitative commentary on growth trajectory. Each extracted value is tagged with an inference method (e.g. `direct_guidance`, `quarterly_sum`, `derived_from_adj_oi_guidance`) and a confidence level, so the downstream pipeline knows how much weight to place on it.
+
+The extracted guidance is then reconciled with the LTM-derived defaults. Revenue Year 1 is replaced by the implied growth rate from the guided revenue figure. Operating margin Year 1 is replaced by the guided margin — with an important adjustment: if management's guidance is on an "adjusted" basis (excluding stock-based compensation), the plugin estimates the SBC burden from the LTM filings and subtracts it to produce a GAAP-equivalent margin. Long-term margin targets, when available, override the industry average as the Year 10 convergence target. Every override is recorded in the output JSON with the raw earnings quote, so the audit trail is fully transparent.
+
+When no guidance is available — either because the company hasn't reported yet or the transcript couldn't be fetched — the plugin falls back gracefully to the LTM-derived anchors and flags the forecast as "unguided."
+
+### S-Curve Convergence Library
+
+<img src="/images/s-curve-library.svg" alt="All six S-curve convergence shapes — exponential decay, rapid deceleration, standard S-curve, linear, delayed deceleration, and step-down — plotted from 100% to 0% over 10 years" />
+
+| Curve | Shape | Best for |
+|---|---|---|
+| **Exponential Decay** | Concave — front-loaded drop | Hyper-growth companies decelerating quickly; cost of capital normalising |
+| **Rapid Deceleration** | Front-loaded S | Post-IPO companies past peak growth; >60% of transition by year 4 |
+| **Standard S-Curve** | Classic sigmoid | Established-growth companies with 20–60% growth and clear trajectory |
+| **Linear** | Uniform steps | Stable, predictable businesses with narrow start-to-target gaps |
+| **Delayed Deceleration** | Back-loaded S | Structural moats, massive TAMs, or pre-profit margin ramps; &lt;30% of transition by year 5 |
+| **Step-Down** | Two plateaus | Known catalysts: contract ramps, infrastructure build-outs, product cycle shifts |
+
+### Revenue Growth
+
+Revenue growth represents the year-over-year increase in the company's top line. In the DCF model, it is the primary driver of future cash flows — every other line item (EBIT, reinvestment, FCFF) flows from the revenue projection. The plugin determines the Year 1 growth rate from the most recent earnings guidance or, if unavailable, from the trailing twelve months. The Year 10 target defaults to the company's industry average 5-year revenue CAGR, reflecting the expectation that even exceptional growers converge toward their industry's structural growth rate at maturity.
+
+$$\text{Revenue}_t = \text{Revenue}_{t-1} \times (1 + g_t)$$
+
+where $g_t$ follows the selected convergence curve from $g_1$ (Year 1 anchor) to $g_{10}$ (industry target). Terminal growth is capped at the risk-free rate.
+
+### Operating Margin
+
+Operating margin measures how much of each revenue dollar becomes operating profit (EBIT) before interest and taxes. For pre-profit companies, the DCF model projects a margin trajectory from the current operating loss toward a sustainable target, reflecting the expectation that operating leverage and scale will eventually turn the business profitable. The plugin sets the Year 1 margin from earnings guidance (GAAP-equivalent, after adding back SBC adjustments) and the Year 10 target from the company's long-term margin guidance or, if unavailable, the industry average pre-tax operating margin.
+
+$$\text{EBIT}_t = \text{Revenue}_t \times m_t$$
+
+where $m_t$ follows the selected convergence curve from $m_1$ to $m_{10}$.
+
+### Sales-to-Capital Ratio
+
+The sales-to-capital ratio measures how much incremental revenue the company generates per dollar of capital invested. It is the DCF model's reinvestment assumption — it determines how much of each year's operating income must be ploughed back into the business to fund the projected revenue growth.
+
+$$\text{Reinvestment}_t = \frac{\text{Revenue}_t - \text{Revenue}_{t-1}}{S/C_t}$$
+
+A low ratio means the company must invest heavily for each dollar of new revenue (capital-intensive build-out phase); a high ratio means the business is capital-efficient and generates revenue growth with minimal incremental investment. The plugin anchors the current S/C ratio from LTM financials and converges it toward the industry average, reflecting the expectation that capital efficiency improves as the business matures and existing infrastructure is utilized more fully.
+
+### Cost of Capital Schedule
+
+The cost of capital schedule projects how the company's WACC evolves over the 10-year forecast as risk normalises. Rather than applying a static discount rate, the plugin generates a year-by-year WACC path that converges from the company's current (elevated) cost of capital toward a mature-state target. This reflects the economic reality that young, heavily-levered, or volatile companies carry a risk premium that should dissipate as they mature, delever, and demonstrate operating stability.
+
+The terminal WACC target is derived from the risk-free rate plus the equity risk premium:
+
+$$WACC_{terminal} = r_f + ERP$$
+
+The terminal WACC assumes the company's risk profile converges to a market-average cost of capital as it matures — debt gets refinanced at tighter spreads, leverage normalises, and equity volatility declines.
+
+## Employee Stock Options
+
+Employee stock options represent a claim on equity that sits between the firm's total equity value and the value available to common shareholders. In a DCF model, the option value is subtracted in the equity bridge — after computing total equity value but before dividing by shares outstanding — to avoid overstating the per-share value. The plugin checks SEC filings for outstanding option grants and, when found, computes their aggregate value using a dilution-adjusted Black-Scholes model. The key inputs are the number of options outstanding, the weighted-average exercise price, the expected option life, the stock's volatility, and the risk-free rate.
+
+When option data is available but computation is incomplete (e.g. for recent IPOs where option disclosures are still sparse), the plugin flags the gap and applies a zero deduction. This means the estimated value per share may be slightly overstated — the option claim exists but hasn't been quantified yet. For mature companies with large option pools, the dilution can be material (sometimes 3–5% of equity value), so this is an important adjustment to revisit.
+
+## DCF Model Output
+
+The DCF engine takes every input assembled in the prior phases — LTM financials, cost of capital, forecast schedules, tax rates, and adjustments — and runs them through a 10-year free cash flow to firm (FCFF) projection followed by a terminal value calculation and an equity bridge. The engine produces year-by-year projections of revenue, EBIT, after-tax operating income, reinvestment, and free cash flow, discounting each year's FCFF back to present value at the corresponding year's cost of capital.
+
+The core mechanics at each projection year are:
+
+$$\text{FCFF}_t = \text{EBIT}_t \times (1 - t_t) - \text{Reinvestment}_t$$
+
+where reinvestment is determined by the revenue growth and the sales-to-capital ratio, and the tax rate fades from the effective rate toward the terminal rate over the projection period. If the company carries net operating losses (NOLs), the engine shields taxable income until the NOL balance is exhausted.
+
+### Terminal Value
+
+Beyond Year 10, the model assumes the company reaches a steady state — growing at the risk-free rate, earning returns equal to its cost of capital, and reinvesting just enough to sustain that growth. The terminal value captures all cash flows from Year 11 to infinity in a single number using the perpetuity growth formula:
+
+$$TV = \frac{\text{FCFF}_{terminal}}{WACC_{terminal} - g_{terminal}}$$
+
+Because the terminal value is discounted back 10 years, even a very large terminal value is substantially reduced in present-value terms. Nevertheless, for companies with long payoff horizons — where the early projection years are dominated by reinvestment — the terminal value often represents the majority of the firm's value.
+
+### Present Value Breakdown
+
+The present value breakdown shows how the intrinsic value of the firm's operations is split between the cash flows generated during the explicit 10-year forecast period and the terminal value that captures everything beyond. A heavy tilt toward terminal value is typical for high-growth companies — during the projection years, the company is reinvesting aggressively and generating negative free cash flow, so the value creation is deferred to the terminal period when the business reaches maturity.
+
+### Equity Bridge
+
+The equity bridge converts the operating value of the firm — which represents the total value of the company's core business operations — into the value available to common shareholders. The bridge subtracts claims that rank ahead of equity (debt, minority interests) and adds assets not captured in the operating cash flows (cash, non-operating investments). Finally, it deducts the value of any employee stock options to arrive at the equity in common stock, which is divided by shares outstanding to produce the per-share intrinsic value.
+
+$$\text{Value per share} = \frac{\text{Operating assets} - \text{Debt} - \text{Minority interests} + \text{Cash} + \text{Non-operating assets} - \text{Options}}{\text{Shares outstanding}}$$
+
+## The Verdict
+
+The final output of the DCF model is a comparison between the intrinsic value per share — what the model says the company is worth based on its projected cash flows — and the current market price. The ratio of price to value indicates whether the market is pricing the company above (overvalued) or below (undervalued) the model's estimate. A ratio below 100% suggests the market is underpricing the stock relative to the DCF, while a ratio above 100% suggests overpricing.
+
+This comparison is not a buy/sell recommendation. It is a single model's output based on a specific set of assumptions. The real value lies in understanding which assumptions drive the result and how sensitive the conclusion is to changes in those assumptions. The base-case verdict is supplemented by two scenario analyses that stress-test the key assumptions.
+
+### Bear Case
+
+The bear case asks: what happens if the most optimistic assumptions don't materialise? It typically adjusts two or three of the most sensitive levers downward — a lower terminal margin, slower revenue growth convergence, or weaker capital efficiency — and re-derives the implied value per share. The goal is not to predict the worst outcome but to establish a floor that reflects a plausible downside scenario. If the market price sits below the bear-case value, the margin of safety is strong; if it sits above, the investment thesis depends entirely on the base case (or better) playing out.
+
+### Bull Case
+
+The bull case asks: what if the company executes better than the base-case assumptions? It typically raises the terminal margin toward management's most ambitious guidance, extends the high-growth period, or assumes faster capital efficiency gains. The bull case establishes a ceiling — the value the company could reach if everything goes right. The spread between bear and bull values gives a sense of the valuation's uncertainty range, which is often more informative than the point estimate itself.
+
+## Diagnostic Flags
+
+After producing the valuation, the plugin runs Damodaran's diagnostic checklist — a series of sanity checks designed to catch internally inconsistent or implausible assumptions before the result is taken at face value. Each check compares a model output against an external benchmark (industry averages, current financials, or mathematical constraints) and flags anything that exceeds a threshold. A diagnostic flag does not mean the assumption is wrong — it means it deserves scrutiny and explicit justification.
+
+The six checks the plugin evaluates are:
+
+1. **Revenue growth vs. industry** — Is the forecasted growth rate more than 2× the industry average? If so, what structural advantage justifies the premium?
+2. **Dollar revenues at maturity** — Does Year 10 revenue exceed 10× current revenue? Absolute dollar scale often tells a different story than growth percentages.
+3. **Operating margins vs. industry** — Is the target margin more than 2× the industry average? Margins above the industry norm require an explanation (pricing power, scale economics, different business model).
+4. **Reinvestment vs. revenue growth** — Is the implied reinvestment rate consistent with the revenue growth? A disconnect between growth and capital deployment suggests an unrealistic sales-to-capital assumption.
+5. **Return on capital trajectory** — Does ROIC converge to or exceed the cost of capital by the terminal year? A company that never earns its cost of capital destroys value in perpetuity.
+6. **Price vs. value** — How far is the estimated value from the market price? Large deviations (>50% in either direction) warrant a review of every major assumption.
+
+## What Each Case Study Demonstrates
+
+Every company presents unique challenges for an automated valuation pipeline. The final section of each case study summarises which edge cases the company exercised — data gaps, unusual financial profiles, guidance integration challenges, or manual overrides — and what they reveal about where human judgment remains essential

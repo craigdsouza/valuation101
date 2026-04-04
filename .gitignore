@@ -1,0 +1,13 @@
+# Claude Code internals
+.claude/
+.agents/
+
+# Internal planning docs
+plan.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node (if Mintlify dev server is run locally)
+node_modules/

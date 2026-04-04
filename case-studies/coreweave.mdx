@@ -1,249 +1,594 @@
 ---
-title: "CoreWeave (CRWV)"
-sidebarTitle: "CoreWeave (CRWV)"
-description: "Full Feeling Lucky FCFF valuation of CoreWeave Inc. — a pre-profitability AI infrastructure company. Valued at $111.20/share vs. market price of $83.51."
+title: "CoreWeave, Inc. (CRWV)"
+sidebarTitle: "CoreWeave, Inc. (CRWV)"
+description: "Full Feeling Lucky FCFF valuation of CoreWeave, Inc. — Valued at `$`106.29/share vs. market price of `$`75.00."
 ---
 
 <Info>
-  **Valuation date:** March 25, 2026 &nbsp;|&nbsp; **Mode:** Feeling Lucky &nbsp;|&nbsp; **Result:** $111.20/share (33% upside vs. $83.51 market price)
+  **Valuation date:** April 1, 2026 &nbsp;|&nbsp; **Mode:** Feeling Lucky &nbsp;|&nbsp; **Result:** `$`106.29/share (41.7% upside vs. `$`75.00 market price)
 </Info>
 
-CoreWeave is a GPU cloud infrastructure company that IPO'd in March 2025. It's a challenging valuation subject: pre-profitability, capital-intensive, with explosive revenue growth and heavy debt financing. This case study walks through every phase of the pipeline and shows the real outputs the plugin produced.
+CoreWeave is a GPU cloud infrastructure company that IPO'd in March 2025. It's a challenging valuation subject: pre-profitability, capital-intensive, with explosive revenue growth and heavy debt financing. This case study walks through every phase of the pipeline and shows the real outputs the plugin produced. See the [Case Study Guide](/case-studies/case-study-guide) for how each section works generically.
+
+## Manual Overrides
+
+See [Manual Overrides](/case-studies/case-study-guide#manual-overrides) for how the plugin handles overrides.
+
+
+<Callout icon="pen-line" color="#D97706">
+{/*NARRATIVE[HUMAN]: manual_overrides */}
+In this case study the only manual override is the figure for 'shares outstanding'. The plugin by default looked up the SEC data which showed 436M shares as the 2025 average. The latest number Q12026 wasn't in the SEC data but was found in the 10-K filing and manually updated as 525.7M shares. This changed the value per share to $106.
+</Callout>
+
 
 ## Company Identification
 
-The plugin resolved "CoreWeave" to its SEC EDGAR identity:
+See [Company Identification](/case-studies/case-study-guide#company-identification) for how the plugin resolves company identity.
 
-| Field | Value |
-|-------|-------|
-| Legal name | CoreWeave, Inc. |
-| Ticker | CRWV |
-| CIK | 0001916183 |
-| Exchange | NASDAQ |
-| Country | United States |
-| Sector | Computer Services |
-| Fiscal year end | December 31 |
+| Field | Value | Source |
+|-------|-------|--------|
+| Ticker | CRWV | User input |
+| CIK | 0001769628 | Web search → [SEC EDGAR](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=coreweave&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany) search results |
+| Legal name | CoreWeave, Inc. | [SEC EDGAR submissions API](https://data.sec.gov/submissions/CIK0001769628.json) `name` |
+| Exchange | NASDAQ | [SEC EDGAR submissions API](https://data.sec.gov/submissions/CIK0001769628.json) `exchanges` |
+| Country | United States | [SEC EDGAR submissions API](https://data.sec.gov/submissions/CIK0001769628.json) `stateOfIncorporation` OR `addresses['business']` |
+| Sector | Software (Internet) | Damodaran indname dataset → ticker lookup (see below) |
+| Fiscal year end | December 31 | [SEC EDGAR submissions API](https://data.sec.gov/submissions/CIK0001769628.json) `fiscalYearEnd`|
 
-**Notable:** CoreWeave IPO'd in March 2025, meaning only one 10-K (FY2025) exists in the SEC EDGAR database. There is no multi-year public filing history to draw from.
+CoreWeave IPO'd in March 2025, so SEC EDGAR history is limited — only one completed 10-K (FY2025) exists at valuation date. The ticker resolved cleanly with no ambiguity.
+
+### Industry Mapping
+
+See [Industry Mapping](/case-studies/case-study-guide#industry-mapping) for how Damodaran's classification works.
+
+Here are 10 of the 29 companies Damodaran classifies under **Software (Internet)** — the same industry group CoreWeave lands in. These are the peer companies whose aggregate unlevered beta, operating margin, and reinvestment rates feed into CoreWeave's default assumptions.
+
+
+
+| Ticker | Company | Industry Group |
+|--------|---------|---------------|
+| AKAM | Akamai Technologies, Inc. | Software (Internet) |
+| APLD | Applied Digital Corporation | Software (Internet) |
+| **CRWV** | **CoreWeave, Inc.** | **Software (Internet)** |
+| DOCN | DigitalOcean Holdings, Inc. | Software (Internet) |
+| FSLY | Fastly, Inc. | Software (Internet) |
+| GDDY | GoDaddy Inc. | Software (Internet) |
+| MDB | MongoDB, Inc. | Software (Internet) |
+| NET | Cloudflare, Inc. | Software (Internet) |
+| OKTA | Okta, Inc. | Software (Internet) |
+| SNOW | Snowflake Inc. | Software (Internet) |
+
+
 
 ## Required Filings
 
-Because the valuation date (March 25, 2026) falls close to the most recent 10-K (December 31, 2025), no bridge quarter 10-Qs are needed. The LTM equals the annual.
+See [Required Filings](/case-studies/case-study-guide#required-filings) for how the plugin determines which SEC filings are needed.
 
 | Filing | Period ends | Role |
 |--------|------------|------|
-| 10-K | 2025-12-31 | Primary annual (LTM basis) |
-| 10-K | 2024-12-31 | Prior year comparison |
+| 10-K | 2025-12-31 | Most Recent Annual (FY2025) |
+| 10-K | 2024-12-31 | Prior Year Comparison (FY2024) |
 
 **Method:** `annual_only` — the annual report was fresh enough that no quarterly bridging was required.
 
+
+
+In this case, the valuation is being performed, before the end of Q1 FY2026 and thus the most recent twelve months simply correspond to the most recent 10-K.
+
+
 ## Trailing Twelve-Month Financials
 
-The LTM figures map to column B of Damodaran's Input sheet. Since no bridging was needed, these come directly from the FY2025 10-K.
+See [Trailing Twelve-Month Financials](/case-studies/case-study-guide#trailing-twelve-month-financials) for how LTM data is extracted. Method: `annual_only`.
 
-| Metric | LTM (FY2025) | Prior Year (FY2024) | Change |
-|--------|-------------|--------------------|----|
+| Metric | LTM | Prior Year | Change |
+|--------|-----|------------|--------|
 | Revenue | $5.13B | $1.92B | +168% |
 | Operating income (EBIT) | −$46M | $324M | Turned negative |
 | Interest expense | $869M | $184M | +372% |
-| Book value of equity | $3.34B | −$414M | Turned positive (IPO) |
+| Book value of equity | $3.33B | −$414M | Turned positive |
 | Book value of debt | $29.82B | $10.62B | +181% |
 | Cash & short-term investments | $3.16B | $1.36B | +132% |
-| Cross holdings | $51M | $79M | −36% |
+| Cross holdings | $168M | $50M | +236% |
+
+
+
+**Data gaps and warnings:**
+
+- **minority_interest**: null — common for companies without consolidated subsidiaries
+- **short_term_debt**: null in source filing(s) — CoreWeave reports all borrowings as long-term
+- **long_term_investments**: null — no long-term bond investments reported; cross holdings computed from equity-method investments + non-marketable equity securities only
+- **shares_outstanding**: null in XBRL — CoreWeave doesn't file the standard `CommonStockSharesOutstanding` tag (recent IPO). The pipeline falls back to `WeightedAverageNumberOfDilutedSharesOutstanding` (436M from the 10-K) in Lucky mode; in other modes, shares are resolved via web search (525.7M = 419M Class A + 106.7M Class B per the 10-K cover page as of Jan 31, 2026)
+- **effective_tax_rate**: 3.95% — computed from tax expense (−`$`48M) ÷ pretax income (−`$`1.2B). Because both numerator and denominator are negative, the ratio is positive but misleadingly low; the model uses the marginal tax rate (25%) from Year 1 onward, converging to the industry average (17.1%) by Year 10
+
 
 **Key observations:**
 
-Revenue nearly tripled year-over-year ($1.9B → $5.1B), but the company swung from an operating profit to a loss as it invested aggressively in GPU infrastructure. Debt exploded from $10.6B to $29.8B — this is a company financing its growth almost entirely with borrowed capital. The IPO brought equity positive for the first time.
+- Revenue nearly tripled year-over-year (`$`1.9B → `$`5.1B), but operating income swung from a `$`324M profit to a `$`46M loss — driven by the massive ramp in depreciation on GPU infrastructure and operating costs to support hyperscale contracts. Interest expense jumped from `$`184M to `$`869M as CoreWeave took on nearly `$`20B in additional debt to finance GPU cluster build-outs. Book equity flipped from negative (`$`−414M) to positive (`$`3.3B), largely from the March 2025 IPO proceeds.
 
-Interest expense of $869M against operating income of −$46M gives a negative interest coverage ratio — a key input for the cost of capital calculation.
+- Two data gaps required attention. Shares outstanding were null in the XBRL filings — CoreWeave only became public midway through FY2025, so the typical share count tags weren't populated. The plugin resolved this from market cap and share price. Pretax income was deeply negative (`$`−1.2B). The effective tax rate computes to 3.95%, but because both tax expense and pretax income are negative, this rate is used only as the base-year rate — the model switches to the marginal tax rate (25%) from Year 1 and converges to the industry average (17.1%) by Year 10.
 
-**Data gaps:** Shares outstanding were not reported in the XBRL filings (common for recent IPOs). The plugin derived them from market cap: $43.09B / $83.51 = ~516M shares.
+
+## Shares Outstanding
+
+See [Shares Outstanding](/case-studies/case-study-guide#shares-outstanding) for how the plugin resolves share counts.
+
+$$\text{Value per share} = \frac{\text{Equity value after adjustments}}{\text{Shares outstanding}}$$
+
+
+#### Why was the XBRL share count null?
+
+The standard XBRL tag `CommonStockSharesOutstanding` was null for CoreWeave — typical for recent IPOs where the filing entity hasn't yet populated standard share-count tags. In Feeling Lucky mode, the pipeline fell back to `WeightedAverageNumberOfDilutedSharesOutstanding` from the FY2025 10-K, which returned 436M — a fiscal-year weighted average that understates the actual share count at valuation date.
+
+#### How were the dual-class shares handled?
+
+The 10-K cover page (as of January 31, 2026) reports 419,028,081 shares of Class A common stock and 106,660,052 shares of Class B common stock, totalling 525.7M shares. CoreWeave has a dual-class structure: both classes carry the same economic rights, so they are summed for valuation purposes. This 525.7M figure was applied as a manual override, reducing the value per share from the pipeline's `$`128.17 (using 436M shares) to `$`106.29.
+
+#### Is the share count at risk of becoming stale?
+
+The share count carries staleness risk. CoreWeave IPO'd in March 2025 and has since seen rapid share count growth — from 489M at the August 2025 10-Q to 526M by January 2026. Ongoing equity compensation vesting, lockup expirations, and the NVIDIA `$`2B strategic investment (January 2026) could push the count higher. Each additional 10M shares dilutes the value per share by roughly `$`2.
+
+
+## Tax Rates
+
+See [Tax Rates](/case-studies/case-study-guide#tax-rates) for how the plugin uses effective vs. marginal rates.
+
+| Tax rate | Value | Source |
+|---|---|---|
+| Effective tax rate | 3.95% | SEC filings |
+| Marginal tax rate | 25.0% | US statutory corporate rate |
+| Industry avg effective (Software/Internet) | 17.1% | [Damodaran Tax Rates dataset](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/taxrate.html) |
+
+
+CoreWeave's 3.95% effective tax rate is technically valid — tax expense (−`$`48M) divided by pretax income (−`$`1.2B) produces a positive ratio — but economically misleading. Both numerator and denominator are negative, so the ratio is an artefact of the company's deep operating losses rather than a reflection of its actual tax burden. The company has significant net operating loss carryforwards from years of pre-IPO losses, which will shield future taxable income.
+
+The model uses the 25% US statutory marginal rate from Year 1 onward (applied to EBIT × (1 − t) in the FCFF formula), then converges to the Software (Internet) industry average effective rate of 17.1% by Year 10. This convergence reflects the expectation that CoreWeave will gradually consume its NOL shield and settle into a tax posture more typical of mature software-infrastructure companies. The 17.1% industry average is below the 25% statutory rate because software companies commonly benefit from R&D tax credits, stock-based compensation deductions, and international tax planning.
+
 
 ## Cost of Capital (WACC)
 
-The plugin computed WACC using the Detailed (bottom-up) method.
+See [Cost of Capital](/case-studies/case-study-guide#cost-of-capital-wacc) for how beta, cost of equity, cost of debt, and WACC are computed.
 
-### Beta estimation
+The plugin computed WACC using the Detailed method.
+
+### Beta Estimation
 
 | Component | Value | Source |
 |-----------|-------|--------|
-| Unlevered beta | 0.962 | Computer Services industry average |
-| D/E ratio | 0.407 | Market cap vs. market value of debt |
-| Levered beta | 1.255 | Re-levered for CoreWeave's capital structure |
+| Unlevered beta (corrected for cash) | 1.591 | [Damodaran betas](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/Betas.html) > Software (Internet) — US industry average |
+| D/E ratio | 0.446 | Market value of debt (`$`17.6B) ÷ market cap (`$`39.4B) |
+| Levered beta | 2.123 | Re-levered for company's capital structure |
 
-### Cost of equity
+$$\beta_{levered} = \beta_{unlevered} \times (1 + (1 - t) \times D/E)$$
 
-| Component | Value |
-|-----------|-------|
-| Risk-free rate | 4.35% (10-year US Treasury) |
-| Equity risk premium | 4.46% (US total ERP) |
-| Country risk premium | 0.23% |
-| **Cost of equity** | **9.95%** |
 
-### Cost of debt
+#### Why use the industry beta instead of CoreWeave's own stock returns?
 
-| Component | Value |
-|-----------|-------|
-| Interest coverage ratio (ICR) | −0.053 (negative — EBIT doesn't cover interest) |
-| Synthetic rating | D2/D |
-| Default spread | 19.0% |
-| Pre-tax cost of debt | 23.58% |
-| **After-tax cost of debt** | **17.68%** |
+The plugin uses the industry unlevered beta (1.591 for Software/Internet) rather than regressing CoreWeave's own stock returns. With barely one year of trading history since the March 2025 IPO, a regression beta would be statistically unreliable and contaminated by post-IPO volatility spikes that don't reflect the company's long-run operating risk.
 
-The negative ICR resulted in the lowest possible synthetic rating (D2/D), implying severe default risk. This drives the pre-tax cost of debt to 23.6% — reflecting the market's view of CoreWeave as a highly leveraged, not-yet-profitable borrower.
+The D/E ratio (0.446) is computed from market values: market value of debt (`$`17.6B, estimated from book debt discounted for CoreWeave's high default spread) divided by market cap (`$`39.4B at `$`75/share × 525.7M shares). This market-value approach is consistent with Damodaran's methodology — book-value D/E would overstate leverage since CoreWeave's `$`29.8B book debt trades well below par.
 
-### Weighted average
+#### How does CoreWeave's beta compare to the industry?
+
+The resulting levered beta of 2.123 is significantly above the Software (Internet) industry average levered beta (~1.7), reflecting CoreWeave's higher-than-industry leverage. Of the total 2.123 levered beta, 1.591 (75%) comes from operating risk and 0.532 (25%) from financial leverage. If CoreWeave increases debt further to fund its `$`30-35B 2026 capex plan, or if the equity declines, the D/E ratio would rise and push levered beta — and cost of equity — even higher.
+
+
+### Cost of Equity
+
+$$K_e = R_f + \beta_{levered} \times ERP$$
+
+| Component | Value | Source |
+|-----------|-------|--------|
+| Risk-free rate | 4.23% | 10-year US Treasury yield (fallback) |
+| Equity risk premium | 4.46% | [Damodaran country ERP](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html) — United States |
+| Country risk premium | 0.23% | [Damodaran country risk premium](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html) — United States |
+| **Cost of equity** | **13.70%** | $K_e = R_f + \beta_{levered} \times ERP$ |
+
+
+The cost of equity builds up as: $K_e = 4.23\% + 2.123 \times 4.46\% = 13.70\%$. The risk-free rate (4.23%) comes from the 10-year US Treasury yield. The equity risk premium (4.46%) is Damodaran's estimate for the United States, which includes a small country risk premium of 0.23% reflecting US sovereign risk.
+
+At 13.70%, CoreWeave's cost of equity is high but reasonable for a pre-profit, heavily-leveraged GPU infrastructure company. For context, stable large-cap tech companies typically carry a cost of equity of 8–10%, and even high-growth software names rarely exceed 12%. The premium here is driven almost entirely by the levered beta (2.123) — CoreWeave's operating risk combined with its aggressive capital structure makes equity investors demand a meaningful return above the market. As the company matures and D/E normalizes, the levered beta should decline toward the industry average, pulling cost of equity down toward 11–12%.
+
+
+### Cost of Debt
+
+$$K_d = (R_f + \text{default spread}) \times (1 - t)$$
+
+| Component | Value | Source |
+|-----------|-------|--------|
+| Interest coverage ratio (ICR) | −0.053 | EBIT ÷ interest expense (LTM) |
+| Synthetic rating | D2/D | [Damodaran synthetic rating table](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html) → ICR lookup |
+| Default spread | 19.0% | [Damodaran synthetic rating spreads](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html) → D rating |
+| Country default spread | 0.23% | [Damodaran country risk premium](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html) — United States |
+| Pre-tax cost of debt | 23.46% | Risk-free rate + default spread + country spread |
+| **After-tax cost of debt** | **17.60%** | $K_d = (R_f + \text{spread}) \times (1 - t)$ |
+
+
+#### What does a negative interest coverage ratio mean?
+
+The interest coverage ratio (ICR) is −0.053, meaning CoreWeave's operating income doesn't cover even 5% of its annual interest payments. In plain terms, the company loses money before interest — EBIT is −`$`46M against `$`869M in interest expense. Damodaran's synthetic rating table maps this to D2/D, the lowest rating category — equivalent to default territory on the familiar S&P/Moody's scale (below CCC).
+
+This triggers a 19.0% default spread, roughly 10× the 1–2% spread a BBB-rated investment-grade company would pay. Adding the risk-free rate (4.23%) and country spread (0.23%) gives a pre-tax cost of debt of 23.46%, reduced to 17.60% after the marginal tax shield.
+
+#### Will CoreWeave's cost of debt stay this high?
+
+Even 17.60% is extraordinarily high — for context, most investment-grade corporates pay 5–7% after-tax. However, this rating reflects a transient phase, not a permanent condition. CoreWeave recently closed an `$`8.5B term loan with A3/A(low) ratings by securing it against GPU assets, suggesting the market views the company's creditworthiness very differently from what the synthetic rating implies. As CoreWeave grows into its debt load and EBIT turns positive, the ICR should improve rapidly, pulling the synthetic rating (and cost of debt) down toward more reasonable levels.
+
+
+### Weighted Average
+
+$$WACC = W_e \times K_e + W_d \times K_d \times (1 - t)$$
 
 | Component | Weight | Cost |
 |-----------|--------|------|
-| Equity | 71.1% | 9.95% |
-| Debt | 28.9% | 17.68% (after tax) |
-| **WACC** | | **12.19%** |
+| Equity | 69.2% | 13.70% |
+| Debt | 30.8% | 17.60% (after tax) |
+| **WACC** | | **14.90%** |
 
-For context, the Computer Services industry average cost of capital is 7.83%. CoreWeave's 12.19% reflects the significant risk premium the market attaches to its debt-heavy, pre-profit business model.
 
-## Growth & Profitability Assumptions
+#### Why is CoreWeave's WACC so far above the industry average?
 
-The four value drivers that power the 10-year DCF projection.
+CoreWeave's 14.90% WACC is 40% above the Software (Internet) industry average of 10.66%. Both sides of the capital structure contribute to the premium: the 13.70% cost of equity (driven by a 2.1× levered beta from high leverage) and the 17.60% after-tax cost of debt (driven by the D2/D synthetic rating) are both well above typical industry levels.
 
-### Revenue growth
+The 69/31 equity-debt weighting means debt's high cost pulls WACC up significantly — if CoreWeave had no debt at all, cost of capital would be closer to 13% (just cost of equity). Conversely, if the company were investment-grade (say, 5% after-tax Kd), the blended WACC would drop to roughly 11%.
 
-| Period | Growth rate | Source |
-|--------|-----------|--------|
-| Year 1 | 134% | Analyst consensus / company guidance |
-| Years 2–5 | 45% (declining) | Analyst-implied forward CAGR |
-| Year 10 | 15% | Moderated toward maturity |
-| Terminal | 4.35% | Risk-free rate |
+#### Will WACC decline as CoreWeave matures?
 
-**Context:** CoreWeave's historical growth was 168%, but the plugin capped Year 1 at analyst consensus (134%). The growth trajectory fades aggressively from there — by year 10, the company would be growing at 15%, still well above the economy but far below its current pace.
+WACC should decline materially as CoreWeave matures. The DCF forecast schedule decays from 13.40% in Year 1 to 8.69% at terminal (risk-free rate + ERP). This path assumes the company grows into profitability, refinances high-cost debt at tighter spreads, and sees its synthetic rating improve from D to investment-grade territory. The decline is front-loaded — by Year 3, WACC has already fallen to 11.0% — reflecting the expectation that the most significant risk reduction happens early as CoreWeave establishes a track record and begins generating positive operating income.
 
-### Operating margin
 
-| Period | Margin | Context |
-|--------|--------|---------|
-| Current (LTM) | −0.9% | Operating loss |
-| Target (Year 10) | 7.41% | Computer Services industry average |
-| Convergence | Linear over 10 years | From loss to industry-average profitability |
+## Forecasts
 
-This is one of the most consequential assumptions: the plugin assumes CoreWeave will go from operating losses to industry-average margins by year 10. Given the capital-intensive nature of GPU cloud, this is neither aggressive nor conservative — it's the industry default.
+See [Forecasts](/case-studies/case-study-guide#forecasts) for how the plugin selects convergence curves and anchors each variable. See [S-Curve Convergence Library](/case-studies/case-study-guide#s-curve-convergence-library) for the six available curve shapes.
 
-### Sales-to-capital ratio
+### Guidance Review
 
-| Period | Ratio | Context |
-|--------|-------|---------|
-| Current | 0.17x | Heavy GPU build-out phase |
-| Years 1–5 | 2.0x (assumed) | Forward-looking, not historical |
-| Years 6–10 | 3.5x (assumed) | Approaching cloud infrastructure maturity |
-| Industry average | 5.19x | Pure software skews this high |
+See [Guidance Review](/case-studies/case-study-guide#guidance-review) for how the plugin extracts and reconciles earnings guidance.
 
-**Critical flag:** The current sales-to-capital ratio of 0.17x reflects CoreWeave's massive GPU investment phase — it's spending far more on infrastructure than it's generating in revenue. The plugin manually anchored the forward assumption at 2.0x/3.5x, well below the industry average but well above the current rate. This is one of the most sensitive assumptions in the entire model.
+
+The plugin extracted guidance from CoreWeave's Q4 2025 earnings call (February 26, 2026), stored in `guidance-Q4-2025.json`. Three variables were overridden:
+
+**Revenue Year 1** — Management guided "`$`12 billion to `$`13 billion, representing approximately 140% growth year over year." The plugin used the conservative `$`12B (low end), implying 133.9% growth. This replaced the LTM-derived default of 167.9% — a meaningful downward adjustment that reflects management's own expectation of deceleration from the explosive FY2025 growth. Confidence: high (direct guidance with specific dollar range).
+
+**Operating Margin Year 1** — Management guided "adjusted operating income of `$`900 million to `$`1.1 billion." The plugin derived this as 7.5% adjusted margin (`$`900M / `$`12B), then subtracted an estimated 5.25pp SBC load to arrive at 2.2% GAAP margin. This replaced the LTM-derived default of −0.9%, moving the starting margin from negative to slightly positive. Confidence: medium (derived from adjusted guidance, GAAP conversion introduces estimation error).
+
+**Operating Margin Year 10** — Management stated "25% to 30% margins over the long term." Using the conservative 25% adjusted figure and deducting an estimated 5pp SBC at maturity gives a 20.0% GAAP target. This replaced the industry average default of 3.7% — by far the most impactful override, as it raises the terminal EBIT by roughly 5× relative to the industry default.
+
+The guidance is current as of the valuation date (April 1, 2026): the Q4 earnings call occurred just five weeks prior, and no subsequent 8-K has revised the outlook.
+
+
+### Revenue Growth
+
+$$\text{Revenue}_t = \text{Revenue}_{t-1} \times (1 + g_t)$$
+
+where $g_t$ follows the selected convergence curve from $g_1$ (Year 1 anchor) to $g_{10}$ (industry target). Terminal growth is capped at the risk-free rate ($r_f$ = 4.23%).
+
+<img src="/images/crwv-revenue-growth.svg" alt="Revenue growth convergence curve — exponential decay from 133.9% to 29.2% over 10 years" />
+
+
+Curve: Exponential Decay — selected because the 134% → 29% gap exceeds 100pp, characteristic of hyper-growth companies where more than 50% of deceleration occurs in the first three years. Year 1 is anchored to Q4 2025 earnings guidance (`$`12B low end, 134% implied growth) rather than raw LTM growth of 168%. Year 10 converges to the Software (Internet) industry 5-year average CAGR of 29.2%.
+
+#### Why did the plugin override LTM growth with guidance?
+
+The plugin overrode the LTM-derived 168% growth with 134% because management explicitly guided "`$`12 billion to `$`13 billion, representing approximately 140% growth year over year" — using the lower bound is conservative. The exponential decay curve was selected automatically by the LLM classifier because the start-to-end gap exceeds 100pp, a pattern characteristic of companies transitioning from hyper-growth to industry-normal rates.
+
+#### Is the 29.2% Year 10 growth target the right benchmark?
+
+The 29.2% Year 10 target deserves scrutiny. Software (Internet) is CoreWeave's Damodaran classification, but the company's physical GPU infrastructure has more in common with Computer Services or Semiconductor Equipment than with asset-light SaaS. A lower terminal growth rate (15–20%) might be more appropriate for a capital-intensive infrastructure business at scale. That said, the AI compute market is expanding rapidly, and CoreWeave's `$`66.8B contracted backlog provides unusual revenue visibility.
+
+#### Does exponential decay fit a contracted-revenue business?
+
+There is a meaningful tension between the exponential decay curve shape — which front-loads deceleration — and CoreWeave's contracted revenue model. Multi-year GPU commitments from Microsoft, OpenAI, and Meta could sustain above-industry growth longer than exponential decay assumes. A delayed deceleration or step-down curve might better reflect the backlog runway, which would increase the valuation.
+
+
+### Operating Margin
+
+$$\text{EBIT}_t = \text{Revenue}_t \times m_t$$
+
+where $m_t$ follows the selected convergence curve from $m_1$ to $m_{10}$.
+
+<img src="/images/crwv-operating-margin.svg" alt="Operating margin convergence curve — standard S-curve from 2.2% to 20.0% over 10 years" />
+
+
+Curve: Standard S-Curve — selected for the moderate-gap margin expansion from 2.2% to 20.0%. Year 1 is anchored to Q4 2025 earnings guidance (adjusted operating income of `$`900M–`$`1.1B on ~`$`12B revenue = 7.5–8.5% adjusted; GAAP-equivalent = 2.2% after ~5.3pp SBC adjustment). Year 10 target of 20.0% reflects management's long-term guidance of 25–30% adjusted margins, converted to GAAP by deducting an estimated 5pp SBC load at maturity. This overrides the Software (Internet) industry average of 3.7%.
+
+#### How does the SBC bridge work from adjusted to GAAP margin?
+
+The SBC bridge works as follows: management guides adjusted operating income of `$`900M on `$`12B revenue (7.5% adjusted margin), but this excludes stock-based compensation. CoreWeave's FY2025 SBC ran at approximately 5.3% of revenue. Subtracting this gives a GAAP margin of roughly 2.2%, which is the Year 1 anchor. By Year 10, SBC as a percentage of revenue should decline as the denominator grows; the model assumes 5pp at maturity.
+
+#### Is a 20% terminal margin realistic for GPU infrastructure?
+
+The 20% GAAP terminal margin (25% adjusted minus 5pp SBC) is aggressive relative to the 3.7% Software (Internet) industry average, but defensible. CoreWeave's GPU infrastructure model has high fixed costs (depreciation on GPU clusters) but strong operating leverage as utilization increases — contribution margins on mature contracts already reach the mid-20s. The S-curve shape is appropriate here: margin expansion is slow in years 1–3 (as new GPU capacity comes online and depreciation ramps) and accelerates in years 4–7 as contracted revenue fills installed capacity.
+
+This is the single most sensitive assumption in the model. If the industry default margin of 3.7% were used instead of the 20% guidance target, terminal EBIT would be roughly 5× lower, collapsing the valuation from `$`106/share to well below the current market price.
+
+
+### Sales-to-Capital Ratio
+
+$$\text{Reinvestment}_t = \frac{\text{Revenue}_t - \text{Revenue}_{t-1}}{S/C_t}$$
+
+<img src="/images/crwv-sales-to-capital.svg" alt="Sales-to-capital ratio convergence — step-down from 0.23x to 1.35x over 10 years" />
+
+
+Curve: Step-Down — selected because the current S/C ratio (0.17x) is less than 30% of the industry target (1.35x), indicating a heavy capital build-out phase. The step-down curve holds the ratio at ~0.23x during years 1–3 (ongoing GPU infrastructure deployment), transitions through a ramp in years 4–5 as contracted capacity comes online, then plateaus at ~1.29x for years 6–9 before reaching the industry average of 1.35x in Year 10. Year 1 is slightly above the LTM 0.17x because guidance-implied capex of `$`30–35B on `$`12B revenue suggests marginally improving efficiency.
+
+#### Why is CoreWeave's capital efficiency so far below the industry average?
+
+The 0.17x LTM ratio means CoreWeave generates only `$`0.17 of incremental revenue for every `$`1 of incremental invested capital — a consequence of being in the middle of a massive GPU cluster build-out, spending `$`23B+ annually against `$`5B of revenue. This is typical of infrastructure companies in the pre-scale phase: the assets are deployed before revenue fully ramps.
+
+#### How does the step-down curve model the "build to harvest" transition?
+
+The step-down curve reflects this story. Years 1–3 hold the ratio at ~0.23x as CoreWeave continues deploying capacity for its `$`66.8B contracted backlog. Years 4–5 see a utilization jump (to ~1.04x) as contracted demand catches up to installed capacity — this is when the company transitions from "build" to "harvest" mode. Years 6–9 plateau near 1.29x, converging to the Software (Internet) industry average of 1.35x.
+
+#### Is 1.35x the right S/C target for a hardware-intensive company?
+
+Whether 1.35x is the right terminal target is debatable. Pure software companies average much higher S/C ratios because they are asset-light. CoreWeave's physical GPU infrastructure will always require heavier capital investment than a SaaS business. A "Computer Services" or "Semiconductor Equipment" comp (typically 0.8–1.0x) might be more realistic. If S/C were capped at 0.5x instead of converging to 1.35x, reinvestment would roughly triple and the valuation would collapse — making this the most sensitive assumption in the entire model.
+
+
+### Cost of Capital
+
+The headline WACC (14.90%) was computed in the [Cost of Capital section above](#cost-of-capital-wacc) using the Detailed method. The DCF forecast schedule starts Year 1 at 13.40% — the first step of the exponential decay — and converges to the terminal target:
+
+$$WACC_{terminal} = r_f + ERP = 4.23\% + 4.46\% = 8.69\%$$
+
+<img src="/images/crwv-cost-of-capital.svg" alt="Cost of capital convergence — exponential decay from 14.90% to 8.69% over 10 years" />
+
+
+Curve: Exponential Decay — selected because the spread between the initial WACC (14.90%) and the terminal target (8.69%) exceeds 5 percentage points. Exponential decay front-loads the WACC decline, reflecting the expectation that the largest risk reduction occurs early as the company establishes a track record, refinances high-cost debt, and credit spreads tighten. By Year 3, WACC has already fallen to 11.0%, and by Year 5 to 9.9%. The remaining convergence is gradual as the final basis points of risk premium erode.
+
+#### Can CoreWeave grow into its cost of capital?
+
+The initial WACC of 14.90% is driven by the D2/D synthetic rating — a consequence of negative EBIT and an ICR of −0.05x. The exponential decay convergence assumes CoreWeave will grow into its debt rather than delever conventionally: as revenue scales and EBIT turns positive, the ICR improves, the synthetic rating upgrades, and the cost of debt falls. This is realistic given the `$`66.8B contracted backlog, but the pace of improvement depends on whether the company can convert bookings into operating profit while simultaneously funding `$`30B+ annual capex.
+
+#### Is the 8.69% terminal WACC realistic for GPU infrastructure?
+
+The terminal WACC of 8.69% ($R_f + ERP$) assumes convergence to market-average risk. This may be slightly optimistic for a GPU infrastructure company with concentrated customer risk — Microsoft still accounts for a large share of revenue, and the AI compute market could face cyclical swings. A persistent 50–100bp premium over the market cost of capital (say, 9.2–9.7% terminal) would reduce the valuation by roughly 5–10%.
+
+Note the model pre-computes the full WACC schedule independently of the DCF projection, sidestepping the circular dependency where WACC affects discount factors which affect present value.
+
 
 ## Employee Stock Options
 
-Options were detected in the XBRL data but the Black-Scholes computation was not completed for this run. Option value was set to $0 in the equity bridge — meaning the final value per share may be slightly overstated.
+See [Employee Stock Options](/case-studies/case-study-guide#employee-stock-options) for how the plugin values option claims.
 
 | Field | Value |
 |-------|-------|
 | Options detected | Yes |
-| Option value applied | $0 (computation TODO) |
+| Option value applied | $0 (Options detected — Black-Scholes computation TODO) |
+
+
+The plugin detected that CoreWeave has employee stock options but assigned a `$`0 value — the Black-Scholes computation is a known TODO for recent IPOs where volatility history is too short and option grant disclosures may be sparse. This means the value per share (`$`106.29) is slightly overstated because the equity bridge doesn't deduct any option claim.
+
+#### How much could unvalued options reduce the per-share value?
+
+To quantify the potential impact: CoreWeave's 10-K discloses equity compensation primarily in the form of RSUs and stock options. As a recently-public company with heavy equity compensation (SBC running at ~5% of revenue), the total dilutive impact could be material. If the company has roughly 30–50M options outstanding with a weighted-average exercise price around `$`40 (typical for pre-IPO grants), the dilution-adjusted Black-Scholes value could be `$`1–3B, reducing the per-share value by `$`2–6. At the upper end, this would bring the estimated value per share closer to `$`100–104, narrowing the gap with the `$`75 market price.
+
+This is a conservative omission — the actual impact depends on the strike prices, vesting schedules, and remaining contractual life of the options, which should be available in the equity compensation footnotes of future filings.
+
 
 ## DCF Model Output
 
-### 10-year FCFF projection
+See [DCF Model Output](/case-studies/case-study-guide#dcf-model-output) for how the FCFF projection, terminal value, and equity bridge work.
+
+$$\text{FCFF}_t = \text{EBIT}_t \times (1 - t_t) - \text{Reinvestment}_t$$
+
+### 10-Year FCFF Projection
 
 | Year | Revenue | Growth | EBIT Margin | EBIT | After-tax EBIT | Reinvestment | FCFF | ROIC |
 |------|---------|--------|-------------|------|----------------|--------------|------|------|
-| Base | $5.1B | — | −0.9% | −$46M | −$46M | — | — | 0.0% |
-| 1 | $12.0B | 134% | −0.9% | −$108M | −$108M | $6.6B | −$6.7B | −0.4% |
-| 2 | $25.2B | 110% | 0.8% | $192M | $171M | $12.4B | −$12.2B | 0.5% |
-| 3 | $50.0B | 98% | 1.6% | $797M | $598M | $21.6B | −$21.0B | 1.2% |
-| 4 | $93.3B | 86% | 2.4% | $2.3B | $1.7B | $34.7B | −$33.1B | 2.4% |
-| 5 | $162.8B | 75% | 3.3% | $5.3B | $4.0B | $51.0B | −$47.0B | 3.8% |
-| 6 | $264.7B | 63% | 4.1% | $10.8B | $8.1B | $38.3B | −$30.2B | 5.2% |
-| 7 | $398.9B | 51% | 4.9% | $19.6B | $14.7B | $44.2B | −$29.5B | 7.6% |
-| 8 | $553.7B | 39% | 5.7% | $31.8B | $23.9B | $42.6B | −$18.7B | 10.0% |
-| 9 | $702.6B | 27% | 6.6% | $46.2B | $34.7B | $30.1B | **$4.6B** | 12.3% |
-| 10 | $808.0B | 15% | 7.4% | $59.9B | $44.9B | $10.0B | **$34.9B** | 14.4% |
-| Terminal | $843.1B | 4.4% | 7.4% | $62.5B | $46.9B | $23.1B | $23.7B | 8.8% |
+| Base | $5.13B | — | -0.9% | −$46M | −$46M | — | — | 0.0% |
+| 1 | $12.0B | 133.9% | 2.2% | $270M | $202M | $52.2B | −$52.0B | 0.7% |
+| 2 | $24.0B | 100.1% | 2.6% | $620M | $465M | $80.7B | −$80.2B | 0.6% |
+| 3 | $42.6B | 77.3% | 3.4% | $1.46B | $1.09B | $114.4B | −$113.3B | 0.7% |
+| 4 | $68.9B | 61.8% | 5.4% | $3.69B | $2.77B | $74.1B | −$71.3B | 1.0% |
+| 5 | $104.2B | 51.3% | 8.9% | $9.28B | $6.96B | $44.1B | −$37.1B | 2.0% |
+| 6 | $150.2B | 44.2% | 13.3% | $20.0B | $15.4B | $45.8B | −$30.4B | 3.9% |
+| 7 | $209.3B | 39.3% | 16.9% | $35.3B | $27.6B | $58.5B | −$30.8B | 6.3% |
+| 8 | $284.8B | 36.1% | 18.8% | $53.6B | $42.7B | $74.6B | −$31.9B | 8.6% |
+| 9 | $381.1B | 33.8% | 19.7% | $75.0B | $60.9B | $86.1B | −$25.2B | 10.6% |
+| 10 | $492.4B | 29.2% | 20.0% | $98.5B | $81.6B | $15.4B | **$66.2B** | 12.4% |
+| Terminal | $513.2B | 4.2% | 20.0% | $102.6B | $85.0B | $41.4B | $43.6B | 8.7% |
 
-**The story in the numbers:** CoreWeave burns cash for the first 8 years as it reinvests aggressively to grow revenue from $5B to $554B. Free cash flow doesn't turn positive until Year 9. The entire valuation is driven by the terminal value and the massive cash flows projected in years 9–10.
 
-### Terminal value
+The projection tells a stark story: FCFF remains deeply negative for nine consecutive years, turning positive only in Year 10 at `$`66.2B. This means the entire valuation depends on the terminal value and the final projection year — a highly fragile structure.
+
+#### Is $492 billion in Year 10 revenue plausible?
+
+Revenue reaches `$`492B by Year 10. For context, AWS generated roughly `$`100B in 2025 revenue and Microsoft Azure approximately `$`80B. At `$`492B, CoreWeave would be larger than any existing cloud infrastructure provider — a scale that, while not impossible in an AI-driven demand environment, requires the total addressable market for GPU compute to expand dramatically. The `$`66.8B contracted backlog provides near-term visibility but covers only a fraction of this trajectory.
+
+#### When does CoreWeave start creating value?
+
+ROIC climbs from 0.7% in Year 1 to 12.4% in Year 10, crossing the cost of capital (~8.7%) around Year 9. This crossing point is when the company transitions from value destruction to value creation — for the first eight years, every dollar of invested capital earns less than its cost. Reinvestment is massive throughout: `$`52B in Year 1, peaking at `$`114B in Year 3, driven by the 0.23x sales-to-capital ratio during the GPU build-out phase. Only in Year 10, when S/C jumps to 1.35x, does reinvestment drop enough for FCFF to turn positive.
+
+The tax rate fades from 25% (marginal, used in lieu of the misleading 3.95% effective rate) in early years to 17.1% (Software/Internet industry average) by Year 10, reflecting the gradual consumption of NOL carryforwards and convergence to normal software-industry tax posture.
+
+
+### Terminal Value
+
+$$TV = \frac{\text{FCFF}_{terminal}}{WACC_{terminal} - g_{terminal}}$$
 
 | Component | Value |
 |-----------|-------|
-| Terminal FCFF (Year 11) | $23.7B |
-| Terminal cost of capital | 8.81% |
-| Terminal growth rate | 4.35% |
-| **Terminal value** | **$531.9B** |
-| PV of terminal value | $184.5B |
+| Terminal FCFF | $43.6B |
+| Terminal cost of capital | 8.69% |
+| Terminal growth rate | 4.23% |
+| **Terminal value** | **$978.6B** |
+| PV of terminal value | $370.2B |
 
-### Present value breakdown
+
+The terminal value of `$`978.6B is enormous — but discounted at the 8.69% terminal WACC over 10 years, it shrinks to `$`370.2B in present-value terms (a roughly 62% discount). The magnitude reflects the assumption that CoreWeave will generate `$`43.6B in terminal FCFF growing at 4.23% in perpetuity.
+
+#### Does CoreWeave earn excess returns in perpetuity?
+
+Terminal ROIC is set equal to the terminal cost of capital (8.69%), which is Damodaran's default excess-return fade assumption. This means the company earns exactly its cost of capital in perpetuity, creating zero excess value beyond Year 10. This is conservative for a company that might develop network effects or switching costs, but reasonable given the relatively commodity nature of GPU compute — cloud infrastructure is ultimately differentiated more by scale and relationships than by proprietary technology.
+
+The terminal growth rate of 4.23% equals the risk-free rate, the standard ceiling for sustainable growth in a perpetuity model. No company can grow faster than the economy indefinitely, and setting terminal growth equal to the risk-free rate is Damodaran's default.
+
+#### What is the implied terminal reinvestment rate?
+
+The implied terminal reinvestment rate is $g / ROIC = 4.23\% / 8.69\% = 48.7\%$ — meaning nearly half of terminal after-tax earnings must be reinvested just to sustain the growth rate. Only the remaining 51.3% flows to investors as free cash flow.
+
+
+### Present Value Breakdown
+
+| Component | Value | % of Total |
+|-----------|-------|------------|
+| PV of FCFFs (years 1–10) | −$287.9B | −349% |
+| PV of terminal value | $370.2B | 449% |
+| **Operating value of the firm** | **$82.4B** | 100% |
+
+
+This is an extreme example of a terminal-value-driven valuation. The PV of operating-year cash flows is deeply negative (−`$`287.9B) because the company burns cash for 9 of 10 projection years. The entire firm value (`$`82.4B) plus the operating-year losses are carried by the terminal value (`$`370.2B).
+
+#### How fragile is a 449% terminal-value-driven model?
+
+Expressed as a ratio: PV of terminal value ÷ operating value = 449%. The terminal value doesn't just dominate the valuation — it must overcome `$`287.9B of present-value destruction during the forecast period to produce a positive firm value. For comparison, even aggressive tech DCFs typically show 70–80% terminal value reliance. At 449%, this model is roughly 5–6× more terminal-value-dependent than a typical growth-company valuation.
+
+This makes the valuation extremely fragile. A 1 percentage point increase in terminal WACC (from 8.69% to 9.69%) would reduce terminal value by roughly 20%, erasing most of the equity value. Similarly, if the Year 10 operating margin landed at 15% instead of 20%, terminal FCFF would fall proportionally and the value per share would drop by `$`20–30. Any investor relying on this DCF should understand that the value estimate is a function of what happens beyond Year 10 — not during the forecast period.
+
+
+### Equity Bridge
+
+$$\text{Value per share} = \frac{\text{Operating assets} - \text{Debt} - \text{Minority interests} + \text{Cash} + \text{Non-operating assets} - \text{Options}}{\text{Shares outstanding}}$$
 
 | Component | Value |
 |-----------|-------|
-| PV of FCFFs (years 1–10) | −$100.5B |
-| PV of terminal value | $184.5B |
-| **Operating value of the firm** | **$84.0B** |
-
-The present value of the first 10 years of cash flows is actually *negative* (−$100.5B) because CoreWeave burns cash in years 1–8. The entire positive value comes from the terminal value, which represents the steady-state business after year 10. This is a classic pattern for high-growth, capital-intensive companies.
-
-### Equity bridge
-
-| Step | Value |
-|------|-------|
-| Operating value of the firm | $84.0B |
-| − Debt | −$29.8B |
+| Operating value of the firm | $82.4B |
+| − Debt | $29.8B |
 | − Minority interests | $0 |
-| + Cash | $3.2B |
-| + Non-operating assets | $51M |
-| − Employee stock options | $0 |
-| × (1 − failure probability) | × 1.00 |
-| **= Equity value** | **$57.4B** |
-| ÷ Shares outstanding | 516M |
-| **= Value per share** | **$111.20** |
+| + Cash & short-term investments | $3.2B |
+| + Non-operating assets (cross holdings) | $0.2B |
+| **= Equity value** | **$55.9B** |
+| − Employee stock option value | $0 |
+| **= Equity in common stock** | **$55.9B** |
+| ÷ Shares outstanding | 525.7M |
+| **= Value per share** | **$106.29** |
 
-### The verdict
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  COREWEAVE, INC. (CRWV)
-  Estimated intrinsic value: $111.20 per share
-  Current market price:      $83.51 per share
+Debt of `$`29.8B is the single largest deduction, absorbing 36% of the operating value. This is the book value of debt; the market value used in the WACC calculation was `$`17.6B — significantly lower because CoreWeave's high-cost debt trades at a discount to par. The DCF uses book value in the equity bridge (consistent with Damodaran's methodology) since this represents the actual repayment obligation.
 
-  The stock appears UNDERVALUED by ~33%
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+Cash of `$`3.2B partially offsets the debt, but the net debt position (`$`29.8B − `$`3.2B = `$`26.6B) is still large relative to the `$`82.4B operating value. Non-operating assets of `$`0.2B represent cross holdings (equity-method investments and non-marketable equity securities) — immaterial in this case. The option value is `$`0 because the Black-Scholes computation is a TODO for this recent IPO. As noted above, the actual dilution could reduce value per share by `$`2–6.
+
+#### How did the share count override affect the valuation?
+
+Shares outstanding were manually overridden from the SEC XBRL-reported 436M (fiscal-year weighted average) to 525.7M (419M Class A + 106.7M Class B per the 10-K cover page as of January 31, 2026). This single override reduced value per share from the pipeline default of `$`128.17 to `$`106.29 — a `$`22/share reduction that underscores the importance of using the correct, up-to-date share count.
+
+The final value of `$`106.29/share implies 41.7% upside to the `$`75.00 market price. However, given the extreme terminal-value reliance (449%) and the aggressive assumptions embedded in the forecast (20% terminal margin, `$`492B Year 10 revenue), this should be treated as a best-case scenario rather than a point estimate.
+
+
+## The Verdict
+
+See [The Verdict](/case-studies/case-study-guide#the-verdict) for how the base case, bear case, and bull case are constructed.
+
+| Metric | Value |
+|--------|-------|
+| Intrinsic value per share | $106.29 |
+| Market price | $75.00 |
+| Price as % of value | 70.6% |
+| Implied upside | 41.7% |
+
+#### What are the three most sensitive levers?
+
+The model estimates `$`106.29/share against a `$`75.00 market price, implying 41.7% upside. Before accepting this at face value, consider the three most sensitive levers:
+
+1. **Terminal operating margin (20% vs. 3.7% industry default)** — This is the single largest driver. The 20% target comes from management guidance (25–30% adjusted, converted to GAAP). If the industry default of 3.7% were used instead, terminal EBIT would be roughly 5× lower and the valuation would collapse to well below the current market price.
+
+2. **Sales-to-capital convergence (0.23x → 1.35x)** — The model assumes CoreWeave's capital efficiency improves dramatically as it transitions from "build" to "harvest" mode. If S/C remains at 0.5x (still 3× the current level but well below the 1.35x target), reinvestment in the later years would roughly triple, pushing FCFF negative for the entire 10-year forecast.
+
+3. **Terminal value carries 449% of operating value** — The PV of operating-year cash flows is −`$`288B, meaning the terminal value must overcome nearly a decade of value destruction. Small changes to terminal WACC or terminal growth produce outsized swings.
+
+All three diagnostic flags fire: forecasted growth exceeds 2× the industry average, Year 10 revenue exceeds 10× current revenue, and the target margin exceeds 2× the industry average. These aren't modelling errors — they reflect the reality of valuing a hyper-growth, pre-profit company — but they should calibrate the reader's confidence in the point estimate.
+
+### Bear Case
+
+In the bear case, two key assumptions are dialled back to reflect a more pessimistic but still plausible scenario:
+
+- **Terminal operating margin: 3.7%** (industry average instead of management's 20% target). If competition from hyperscalers (AWS, Azure, GCP) intensifies and CoreWeave's capital-intensive model prevents the margin expansion management envisions, margins could settle near the industry average rather than 5× above it.
+- **Sales-to-capital ratio: capped at 0.7x** (instead of converging to 1.35x). Physical GPU infrastructure will always require heavier reinvestment than asset-light software. A 0.7x terminal S/C means the company generates only `$`0.70 of incremental revenue per `$`1 of invested capital.
+
+Revenue growth is kept unchanged (anchored to earnings guidance). Under these assumptions, the terminal EBIT falls from `$`103B to roughly `$`19B, reinvestment stays elevated throughout the forecast, and FCFF never reaches the `$`66B Year 10 level in the base case. The implied value per share drops to approximately `$`15–25, well below the `$`75 market price — implying the stock is significantly overvalued in the bear case.
+
+This scenario is not far-fetched. It essentially asks: what if CoreWeave turns out to be a good revenue-growth company but a mediocre-margin, capital-hungry infrastructure business?
+
+### Bull Case
+
+In the bull case, three assumptions are pushed toward the optimistic end of the plausible range:
+
+- **Terminal operating margin: 25% GAAP** (management's upper-bound of 30% adjusted, minus 5pp SBC). This reflects full operating leverage on GPU infrastructure with long-term contracts, where contribution margins on mature capacity reach the mid-20s and overhead scales more slowly than revenue.
+- **Revenue growth: delayed deceleration curve** instead of exponential decay. CoreWeave's `$`66.8B contracted backlog and multi-year commitments from Microsoft, OpenAI, and Meta could sustain above-industry growth into years 4–5 rather than decelerating immediately. This would produce roughly 15–20% higher cumulative revenue over the forecast period.
+- **Sales-to-capital ratio: 1.5x by Year 10** (above the 1.35x industry average). As existing GPU clusters are filled to capacity and the company shifts from net-new builds to upgrades and replacements, capital efficiency could exceed the industry norm.
+
+Under these assumptions, the implied value per share rises to approximately `$`180–220, representing 140–190% upside from the `$`75 market price. The analyst consensus price target of `$`121 falls roughly at the midpoint between the base case (`$`106) and the bull case.
+
+The bear-to-bull range of `$`15–220 captures the extraordinary uncertainty in this valuation. The `$`200+ spread between the scenarios reflects the fragility of the terminal-value-driven model and the sensitivity to margin and reinvestment assumptions.
 
 ## Diagnostic Flags
 
-The plugin's diagnostics raised two flags:
+See [Diagnostic Flags](/case-studies/case-study-guide#diagnostic-flags) for the six checks the plugin evaluates.
 
 <Warning>
-  **FLAG 1:** Revenue growth of 134% exceeds 2× the Computer Services industry average of 27.1%. While anchored to analyst consensus, this is extreme and the model is highly sensitive to whether this growth materializes.
+**Check 1 — Revenue Growth:** Forecasted growth of 133.9% exceeds 2× the Software (Internet) industry average of 29.2%.
 </Warning>
 
 <Warning>
-  **FLAG 2:** Year 10 revenue of ~$808B vs. current $5.1B implies a 157× increase over 10 years. Even for an AI infrastructure company in a booming market, this is an aggressive assumption.
+**Check 2 — Dollar Revenues:** Year 10 revenue of $492B exceeds 10× the current revenue of $5.1B. At this scale, the company would be larger than any existing cloud infrastructure provider.
 </Warning>
 
-### Additional caveats
+<Warning>
+**Check 3 — Operating Margins:** Target margin of 20.0% exceeds 2× the Software (Internet) industry average of 3.7%. This is driven by management's long-term guidance rather than the industry default.
+</Warning>
 
-- **Shares outstanding** were derived from market cap, not from XBRL filings
-- **Sales-to-capital ratio** was manually anchored (0.17x current vs. 2.0x assumed) — this is the single most sensitive assumption
-- **CoreWeave has no public 10-K prior to FY2025** (IPO March 2025) — no multi-year historical trend to calibrate against
-- **FCFF is negative in years 1–8** — the valuation is almost entirely terminal-value-driven
-- **Employee options** were detected but not valued — final result may be slightly overstated
 
-## What this case study demonstrates
+All three diagnostic flags fire on the aggressive side. This is not surprising for a hyper-growth, pre-profit company, but it means the valuation should be treated as a best-case scenario rather than a conservative base case.
 
-CoreWeave is a stress-test for the valuation plugin. It hits nearly every edge case:
+**Check 1 (Revenue Growth):** The 133.9% Year 1 growth is anchored to earnings guidance, so it isn't a model invention — management explicitly guided `$`12–13B. But the exponential decay curve still assumes 29.2% growth in Year 10, which is the Software (Internet) industry average, not a discount to it. For a `$`492B company, 29.2% growth implies adding `$`144B of revenue in Year 10 alone.
 
-1. **Recent IPO** — only one annual filing available, no multi-year history
-2. **Pre-profitability** — negative EBIT makes many standard calculations (interest coverage, ROIC) unusual
-3. **Extreme leverage** — $29.8B of debt on $5.1B of revenue, resulting in a D-rated synthetic bond rating
-4. **Hyper-growth** — 168% historical growth, with analyst consensus at 134% for the next year
-5. **Capital-intensive** — current sales-to-capital of 0.17x requires manual forward-looking adjustment
-6. **Missing XBRL fields** — shares outstanding not in filings, requiring derivation from market cap
+**Check 2 (Dollar Revenues):** `$`492B in Year 10 would make CoreWeave roughly 5× the size of AWS's current annual revenue. Even in an AI-driven demand scenario, this scale is extraordinary. The `$`66.8B contracted backlog provides near-term visibility but covers only a fraction of the cumulative revenue implied by this trajectory. The total addressable market for GPU cloud compute would need to expand by an order of magnitude.
 
-The plugin handled all of these programmatically, flagged the risks, and produced a valuation that landed at $111/share — 33% above the market price at the time. Whether you agree with the assumptions or not, every number is traceable to a specific SEC filing or data source, and every judgment call is documented.
+**Check 3 (Operating Margins):** The 20% GAAP target comes from management guidance (25–30% adjusted → 20% GAAP after SBC deduction). This is a credible aspiration — CoreWeave's contribution margins on mature contracts already reach the mid-20s — but it is not an industry-derived expectation. If competition from hyperscalers compresses margins or if hardware refresh cycles prove more expensive than anticipated, the 20% target may not materialise.
+
+#### Which diagnostic checks passed, and what does that tell us?
+
+Reinvestment consistency (Step 4) and risk convergence (Step 5) both passed, meaning the model is internally consistent — ROIC converges above the cost of capital by Year 10, and the reinvestment rates implied by the S/C schedule are achievable given the revenue trajectory. The model is aggressive but not incoherent.
+
+
+## What This Case Study Demonstrates
+
+
+This CoreWeave valuation exercises several edge cases that stress-test the plugin's capabilities:
+
+1. **Recent IPO with sparse XBRL data** — Shares outstanding were null in the XBRL filings, requiring a fallback to the weighted-average diluted count (436M) and ultimately a manual override to 525.7M from the 10-K cover page. The effective tax rate (3.95%) was mathematically valid but economically misleading (two negative numbers). Employee stock option data was too sparse for Black-Scholes valuation.
+
+2. **Pre-profitability company** — Negative EBIT (−`$`46M) produced a negative interest coverage ratio (−0.053), triggering the D2/D synthetic credit rating and a 19% default spread — the highest in Damodaran's table. This cascades into a 23.5% pre-tax cost of debt, which would be implausible for a company that just raised `$`8.5B in investment-grade secured financing.
+
+3. **Extreme terminal-value reliance** — The PV of operating-year FCFFs was deeply negative (−`$`288B), making this a 449% terminal-value-driven valuation — far beyond the typical 70–80% range. This is an inherent feature of valuing companies with years of negative cash flow ahead.
+
+4. **Earnings guidance integration** — The plugin extracted three guided variables from the Q4 2025 earnings call (revenue Year 1, operating margin Year 1, operating margin Year 10), each with an SBC bridge to convert adjusted figures to GAAP-equivalent inputs. This overrode LTM-derived defaults with forward-looking anchors.
+
+5. **Four distinct convergence curves** — Exponential decay for revenue growth and cost of capital, standard S-curve for operating margin, and step-down for sales-to-capital. Each curve shape was selected by the LLM classifier based on the gap between current values and terminal targets.
+
+6. **Manual override workflow** — The share count override reduced value per share by `$`22 (from `$`128 to `$`106), demonstrating why the override mechanism exists and how a single data correction can materially change the output.
+
+
+## References
+
+**Company Filings & Data:**
+
+- [CoreWeave FY2025 10-K](https://s205.q4cdn.com/133937190/files/doc_financials/2025/q4/CoreWeave-Inc-FY25-10-K-7.pdf) — Full annual report for fiscal year ending December 31, 2025
+- [CoreWeave SEC Filings (EDGAR)](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=&dateb=&owner=include&count=40) — All SEC filings for CIK 0001769628
+- [CoreWeave Investor Relations](https://investors.coreweave.com/financials/quarterly-results/default.aspx) — Quarterly results, earnings presentations, and press releases
+- [Damodaran Betas by Industry](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/Betas.html) — Source for the Software (Internet) unlevered beta (1.591)
+- [Damodaran Synthetic Rating Spreads](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html) — Source for the D2/D rating and 19% default spread
+- [Damodaran Country ERP](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html) — Source for the US equity risk premium (4.46%)
+
+**Earnings & Analysis:**
+
+- [CoreWeave Q4 2025 Earnings Call Transcript (Motley Fool)](https://www.fool.com/earnings/call-transcripts/2026/02/27/coreweave-crwv-q4-2025-earnings-call-transcript/) — Full transcript with `$`12–13B FY2026 revenue guidance and 25–30% long-term margin target
+- [CoreWeave Q4 2025 Earnings Report (CNBC)](https://www.cnbc.com/2026/02/26/coreweave-crwv-q4-earnings-report-2025.html) — Coverage of Q4 results including EPS miss and guidance breakdown
+- [The Bull Case and Bear Case for CoreWeave (Motley Fool)](https://www.fool.com/investing/2026/03/14/the-bull-case-and-bear-case-for-coreweave-stock/) — Balanced analysis of upside and downside scenarios
+- [CoreWeave Stock Forecast: Debt and Delays (Baptista Research)](https://baptistaresearch.com/coreweave-stock-forecast-2026-ai-debt-crash/) — Analysis of CoreWeave's debt structure and execution risks
+
+**Industry Context:**
+
+- [CoreWeave Deep Dive: From Crypto to AI Infrastructure (Introl)](https://introl.com/blog/coreweave-gpu-cloud-ai-infrastructure-deep-dive-2025) — Comprehensive overview of CoreWeave's pivot from crypto mining to GPU cloud
+- [CRWV Analysis: AI Backlog of $66.8B (MEXC)](https://blog.mexc.com/finance/crwv-stock-analysis-ai-backlog-coreweave-inflection-point/) — Analysis of CoreWeave's contracted backlog and customer concentration
+- [CoreWeave's $55B Backlog and the Neocloud Boom (Stansberry)](https://stansberryresearch.com/stock-market-trends/coreweaves-55-billion-backlog-marks-the-next-phase-of-the-neocloud-boom) — Context on the neocloud market including the Meta partnership

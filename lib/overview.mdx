@@ -1,7 +1,7 @@
 ---
 title: "Python Library Overview"
 sidebarTitle: "Overview"
-description: "The deterministic math engine behind Valuation101 — pure Python, no AI dependencies."
+description: "The deterministic math engine behind Valuation101 — 12 pure Python modules, no AI dependencies."
 ---
 
 ## Architecture
@@ -12,15 +12,37 @@ The Python library in `lib/` handles all mathematical computations. It is intent
 - **Everything is testable** — unit tests validate against Damodaran's reference spreadsheet
 - **No AI in the math** — the AI handles conversation; Python handles arithmetic
 
-## Modules
+## Core modules
 
 | Module | Purpose | Key functions |
 |--------|---------|---------------|
-| [dcf_engine.py](/lib/dcf-engine) | FCFF projection, terminal value, discounting | `project_fcff()`, `terminal_value()`, `discount_to_present()` |
-| [cost_of_capital.py](/lib/cost-of-capital) | WACC computation (3 methods) | `wacc_detailed()`, `wacc_industry()`, `wacc_distribution()` |
-| [adjustments.py](/lib/adjustments) | R&D capitalization, lease conversion | `capitalize_rd()`, `convert_leases()` |
-| [equity_bridge.py](/lib/equity-bridge) | Operating value → equity per share | `equity_bridge()`, `option_value()` |
-| [data_loader.py](/lib/data-loader) | Load reference data from /data | `load_industry_averages()`, `load_erp_data()` |
+| [dcf_engine.py](/lib/dcf-engine) | FCFF projection, terminal value, discounting, equity bridge | `dcf_valuation()`, `fcff_waterfall()`, `equity_bridge()` |
+| [cost_of_capital.py](/lib/cost-of-capital) | WACC computation (3 methods), beta levering, synthetic ratings | `wacc_detailed()`, `wacc_industry_avg()`, `wacc_distribution()` |
+| [curve_shapes.py](/lib/curve-shapes) | 6 convergence curve types for forecast variables | `exponential_decay()`, `s_curve()`, `linear_fade()` |
+| [option_value.py](/lib/option-value) | Dilution-adjusted Black-Scholes for employee options | `option_value()`, `dilution_factor()`, `black_scholes_call()` |
+| [failure_rate.py](/lib/failure-rate) | Default probability by bond rating or company age | `failure_rate_by_rating()`, `failure_rate_by_age()` |
+| [rd_converter.py](/lib/adjustments) | R&D capitalization into research asset | `capitalize_rd()` |
+| [lease_converter.py](/lib/adjustments) | Operating lease to debt conversion | `convert_operating_leases()` |
+| [lookup.py](/lib/data-loader) | Industry and country reference data lookups | `get_industry()`, `get_distribution()`, `get_country_erp()` |
+
+## Utility modules
+
+| Module | Purpose |
+|--------|---------|
+| populate_curve_data.py | Generate 10-year forecast schedules from curve type + start/end values |
+| add_forecast_charts.py | Insert convergence charts into the valuation Excel workbook |
+| upgrade_template_v2.py | Schema migrations for the spreadsheet template |
+| check_cache.py | Validate cache integrity (files present, dates, sizes) |
+
+## Standalone execution
+
+The plugin can run the full pipeline without any AI interaction via `lucky_pipeline.py`:
+
+```bash
+python3 lucky_pipeline.py --ticker NVDA --date 2026-03-13 --output runs/NVDA_test/
+```
+
+This triggers company identification, data fetching, LTM computation, WACC, growth assumptions, and DCF — all pure Python math. Output is a completed valuation spreadsheet with JSON results.
 
 ## Testing
 
@@ -29,3 +51,5 @@ All modules are tested against the Almarai example pre-loaded in Damodaran's fcf
 ```bash
 python -m pytest tests/ -v
 ```
+
+Test coverage includes: WACC computation, DCF projection, curve shapes, LTM bridging, last-10-K extraction, failure rates, lease conversion, option valuation, R&D capitalization, and SEC API fetching.

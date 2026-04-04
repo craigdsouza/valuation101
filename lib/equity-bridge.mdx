@@ -1,27 +1,43 @@
 ---
 title: "Equity Bridge"
-sidebarTitle: "equity_bridge.py"
+sidebarTitle: "dcf_engine.py (bridge)"
 description: "Convert operating value of the firm to equity value per share."
 ---
 
-## Module: `lib/equity_bridge.py`
+## Equity bridge in `lib/dcf_engine.py`
 
-Implements the final step of the valuation: converting the discounted operating value into a per-share equity value.
+The equity bridge is the final step of the valuation, implemented within the DCF engine module. It converts the discounted operating value of the firm into a per-share equity value.
 
-## Key functions
+## The bridge
+
+```
+Operating value of the firm (PV of FCFFs + PV of terminal value)
+− Book value of debt
++ Cash and marketable securities
+− Minority interests
+− Employee options value (from option_value.py)
+× (1 − failure probability) (from failure_rate.py)
+÷ Shares outstanding
+= Estimated value per share
+```
+
+## Key function
 
 ### `equity_bridge()`
 
-```
-Operating value
-− Debt
-+ Cash
-− Employee options value
-× (1 − failure probability)
-÷ Shares outstanding
-= Value per share
-```
+**Parameters:**
+- `operating_value` — present value of the firm (from discounting)
+- `debt` — book value of debt
+- `cash` — cash and marketable securities
+- `minority_interests` — minority interest claims (if any)
+- `option_value` — total employee option value (from [option_value.py](/lib/option-value))
+- `failure_probability` — probability of corporate failure (from [failure_rate.py](/lib/failure-rate))
+- `distress_proceeds` — recovery value in failure scenario
+- `shares` — shares outstanding
 
-### `option_value()`
+**Returns:** Dictionary with equity value, value per share, and each bridge component.
 
-Dilution-adjusted Black-Scholes valuation of outstanding employee stock options.
+## Related modules
+
+- [option_value.py](/lib/option-value) — dilution-adjusted Black-Scholes for the option deduction
+- [failure_rate.py](/lib/failure-rate) — probability of failure for the distress adjustment

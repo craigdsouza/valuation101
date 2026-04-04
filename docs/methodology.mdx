@@ -41,15 +41,27 @@ The DCF gives you the value of the entire firm (debt + equity). To get to equity
 
 ## Key assumptions
 
-Every DCF comes down to a handful of assumptions. Valuation101 makes these explicit:
+Every DCF comes down to four forecast variables and a handful of structural assumptions. Valuation101 makes these explicit.
+
+### Forecast variables
+
+Each variable is defined by a **start value** (year 1), an **end value** (year 10 target), and a **convergence curve** from the [curve shapes library](/lib/curve-shapes) that controls the 10-year transition:
+
+| Variable | Start value | End value | Curve controls |
+|----------|-------------|-----------|----------------|
+| Revenue growth | LTM growth or earnings guidance | Industry 5-year average | How quickly growth decelerates |
+| Operating margin | LTM margin or earnings guidance | Industry average or guided target | How margins expand or compress |
+| Sales-to-capital ratio | Company's current ratio | Industry average | How reinvestment efficiency evolves |
+| Cost of capital | Initial WACC | Risk-free rate + ERP | How risk premium declines at maturity |
+
+### Structural assumptions
 
 | Assumption | What it means | Where it comes from |
-|------------|---------------|-------------------|
-| Revenue growth | How fast the top line grows | Historical trend + industry benchmarks |
-| Target operating margin | Where EBIT margin converges | Industry median or company target |
-| Sales-to-capital ratio | Revenue generated per dollar reinvested | Industry average, adjusted for company |
+|------------|---------------|---------------------|
 | Cost of capital (WACC) | Discount rate for future cash flows | CAPM + synthetic rating + capital structure |
 | Stable growth rate | Long-run growth in perpetuity | Risk-free rate (capped at GDP growth) |
+| Terminal ROIC | Whether excess returns persist | Default: ROIC converges to cost of capital |
+| Failure probability | Risk of corporate default | Bond-rating-based or age-based |
 
 <Info>
   Damodaran's key insight: the *story* about a company should drive the *numbers*, not the other way around. Are you valuing Apple as a mature cash cow or a growth company reinventing healthcare? The story changes every assumption.

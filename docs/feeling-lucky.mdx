@@ -1,12 +1,12 @@
 ---
 title: "Feeling Lucky"
 sidebarTitle: "Feeling Lucky"
-description: "One-click valuation using sensible defaults — get an intrinsic value in 60 seconds."
+description: "One-click valuation using sensible defaults — get an intrinsic value in ~2 min"
 ---
 
 ## What is Feeling Lucky?
 
-Feeling Lucky runs the entire valuation pipeline with sensible defaults — no questions asked. You get an intrinsic value per share in about 60 seconds, then you can drill into any assumption and tweak it.
+Feeling Lucky runs the entire valuation pipeline with sensible defaults — no questions asked. You get an intrinsic value per share in about 2 min, then you can drill into any assumption and tweak it.
 
 ## When to use it
 
@@ -14,14 +14,40 @@ Feeling Lucky runs the entire valuation pipeline with sensible defaults — no q
 - You're screening multiple companies and need rough values fast
 - You want to see the full output before deciding what to customize
 
-## What defaults does it use?
+## How forecasts work
+
+The DCF model projects four variables over a 10-year horizon. For each variable, Feeling Lucky auto-selects three things: a **start value** (year 1), an **end value** (year 10 target), and a **convergence curve** that controls the transition shape between them.
+
+### The four forecast variables
+
+| Variable | Start value (Year 1) | End value (Year 10) | Curve selection logic |
+|----------|---------------------|--------------------|-----------------------|
+| **Revenue growth** | Earnings guidance (if available), else LTM growth rate | Industry 5-year average growth | Auto-classified based on gap size and growth trajectory |
+| **Operating margin** | Earnings guidance (if available), else LTM EBIT margin | Earnings guidance long-term target (if available), else industry average | Auto-classified based on current vs. target gap |
+| **Sales-to-capital ratio** | Company's current ratio (LTM revenue / invested capital) | Industry average | Auto-classified; S-curve applied when current ratio is very far from industry |
+| **Cost of capital** | WACC from cost-of-capital phase (industry average method) | Risk-free rate + base ERP | Auto-classified based on WACC premium over terminal |
+
+### Convergence curves
+
+Rather than assuming a simple linear transition, the plugin selects from [six curve shapes](/lib/curve-shapes) that model how real companies evolve:
+
+| Curve | When it's auto-selected |
+|-------|------------------------|
+| Exponential Decay | High-growth company decelerating as market saturates |
+| Standard S-Curve | Company with a moat — holds current level before converging |
+| Rapid Deceleration | Very large gap between start and target, fast normalization expected |
+| Linear | Moderate, steady convergence |
+| Delayed Deceleration | Strong near-term visibility (e.g., backlog-driven revenue) |
+| Step-Down | Rare auto-selection; typically chosen manually in Expert mode |
+
+The curve selection is rule-based — it considers the direction (ascending vs. descending), the magnitude of the gap, and the company's recent trajectory.
+
+## Other defaults
 
 | Assumption | Default logic |
 |------------|--------------|
-| Cost of capital | Industry average WACC |
-| Revenue growth | Blended: historical CAGR + industry median |
-| Target operating margin | Industry median |
-| Sales-to-capital ratio | Industry average |
+| Cost of capital method | Industry average WACC |
+| Earnings guidance | Auto-fetched from latest earnings call transcript (if available) |
 | R&D capitalization | Auto-detect: capitalizes if R&D > 5% of revenue |
 | Lease conversion | Auto-detect: converts if operating leases > 10% of assets |
 | Failure probability | Bond-rating-based if rated, age-based otherwise |
@@ -30,8 +56,9 @@ Feeling Lucky runs the entire valuation pipeline with sensible defaults — no q
 
 Once you see the result, you can:
 
-- **Tweak any assumption** — "What if growth is 15% instead of 12%?"
-- **Switch to Expert mode** — re-run with full control
+- **Tweak any assumption** — "What if year 1 growth is 15% instead of 12%?"
+- **Change a curve shape** — "Use an S-curve for margins instead of linear"
+- **Switch to Expert mode** — re-run with full control over all four variables
 - **Run diagnostics** — Damodaran's 6-step sanity check
 - **Generate a report** — `.docx` with full breakdown
 

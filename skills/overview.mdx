@@ -1,12 +1,12 @@
 ---
 title: "Skills Overview"
 sidebarTitle: "Overview"
-description: "All 16 skills in the Valuation101 plugin — with dependency graph, inputs, outputs, and execution order."
+description: "All 19 skills in the Valuation101 plugin — with dependency graph, inputs, outputs, and execution order."
 ---
 
 ## The skill graph
 
-Valuation101 is composed of 16 skills that execute in a defined order. Each skill has explicit inputs, outputs, and dependencies.
+Valuation101 is composed of 19 skills that execute in a defined order. Each skill has explicit inputs, outputs, and dependencies.
 
 ```mermaid
 graph TD
@@ -21,7 +21,8 @@ graph TD
     LTM --> LC[lease-converter]
     RD --> COC
     LC --> COC
-    COC --> GAP[growth-and-profitability]
+    COC --> EG[earnings-guidance]
+    EG --> GAP[growth-and-profitability]
     GAP --> FM[fcff-model]
     FM --> EO[employee-options]
     FM --> FR[failure-rate]
@@ -29,6 +30,7 @@ graph TD
     FR --> FM
     FM --> DX[diagnostics]
     FM --> VR[valuation-report]
+    FM --> CSG[case-study-generator]
 ```
 
 ## Skill inventory
@@ -44,12 +46,13 @@ graph TD
 | [last-twelve-months](/skills/last-twelve-months) | Compute trailing-12-month financials | Per-filing `_raw.json` files | `ltm_{date}.json` |
 | [last-10-k](/skills/last-10-k) | Extract most recent annual financials | Primary 10-K `_raw.json` | `last_10k_{date}.json` |
 
-### Valuation Engine (Phase 4–5)
+### Valuation Engine (Phase 4–6)
 
 | Skill | Purpose | Inputs | Outputs |
 |-------|---------|--------|---------|
 | [cost-of-capital](/skills/cost-of-capital) | Compute WACC (3 methods) | LTM data, industry data, risk-free rate | WACC %, cost of equity, cost of debt |
-| [growth-and-profitability](/skills/growth-and-profitability) | Set value-driver assumptions | LTM data, industry benchmarks | Growth rate, target margin, S/C ratio |
+| [earnings-guidance](/skills/earnings-guidance) | Extract forward guidance from earnings calls | Ticker, statements required | Revenue and margin guidance JSON |
+| [growth-and-profitability](/skills/growth-and-profitability) | Set 4 forecast variables with convergence curves | LTM data, industry benchmarks, guidance | 10-year schedules for growth, margin, S/C, CoC |
 | [fcff-model](/skills/fcff-model) | Run the DCF engine | All prior outputs + assumptions | Value per share, projection table |
 
 ### Adjustments (Optional)
@@ -61,13 +64,20 @@ graph TD
 | [employee-options](/skills/employee-options) | Value outstanding stock options | Company has employee options outstanding |
 | [failure-rate](/skills/failure-rate) | Estimate probability of failure | All companies (adjusts final value) |
 
-### Output (Phase 6)
+### Output (Phase 7+)
 
 | Skill | Purpose | Inputs | Outputs |
 |-------|---------|--------|---------|
 | [fcff](/skills/fcff) | Orchestrate the full pipeline | Company name + mode | End-to-end valuation |
 | [diagnostics](/skills/diagnostics) | Sanity-check the valuation | Completed valuation output | 6-point diagnostic report |
 | [valuation-report](/skills/valuation-report) | Generate formatted report | Completed valuation output | `.docx` report |
+| [case-study-generator](/skills/case-study-generator) | Generate docs site case study | Completed valuation spreadsheet | `.mdx` case study + SVG charts |
+
+### Experimental
+
+| Skill | Purpose | Status |
+|-------|---------|--------|
+| llm-classifier | LLM-based curve type classifier for forecast variables | Placeholder — rule-based fallback in use |
 
 ## For AI agents
 

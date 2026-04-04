@@ -1,0 +1,48 @@
+<svg viewBox="0 0 520 210" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <text x="260.0" y="16" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">Sales-to-Capital — Step-Down</text>
+  <rect x="58" y="32" width="437" height="136" fill="#fafafa" rx="3"/>
+  <line x1="58" y1="32.0" x2="495" y2="32.0" stroke="#e5e7eb" stroke-width="0.5"/>
+  <text x="53" y="32.0" text-anchor="end" dominant-baseline="middle" font-size="9" fill="#9ca3af">1.47x</text>
+  <line x1="58" y1="59.2" x2="495" y2="59.2" stroke="#e5e7eb" stroke-width="0.5"/>
+  <text x="53" y="59.2" text-anchor="end" dominant-baseline="middle" font-size="9" fill="#9ca3af">1.18x</text>
+  <line x1="58" y1="86.4" x2="495" y2="86.4" stroke="#e5e7eb" stroke-width="0.5"/>
+  <text x="53" y="86.4" text-anchor="end" dominant-baseline="middle" font-size="9" fill="#9ca3af">0.90x</text>
+  <line x1="58" y1="113.6" x2="495" y2="113.6" stroke="#e5e7eb" stroke-width="0.5"/>
+  <text x="53" y="113.6" text-anchor="end" dominant-baseline="middle" font-size="9" fill="#9ca3af">0.62x</text>
+  <line x1="58" y1="140.8" x2="495" y2="140.8" stroke="#e5e7eb" stroke-width="0.5"/>
+  <text x="53" y="140.8" text-anchor="end" dominant-baseline="middle" font-size="9" fill="#9ca3af">0.34x</text>
+  <line x1="58" y1="168.0" x2="495" y2="168.0" stroke="#e5e7eb" stroke-width="0.5"/>
+  <text x="53" y="168.0" text-anchor="end" dominant-baseline="middle" font-size="9" fill="#9ca3af">0.05x</text>
+  <text x="58.0" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">Base</text>
+  <text x="101.7" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">1</text>
+  <text x="145.4" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">2</text>
+  <text x="189.1" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">3</text>
+  <text x="232.8" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">4</text>
+  <text x="276.5" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">5</text>
+  <text x="320.2" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">6</text>
+  <text x="363.9" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">7</text>
+  <text x="407.6" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">8</text>
+  <text x="451.3" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">9</text>
+  <text x="495.0" y="198" text-anchor="middle" font-size="9" fill="#9ca3af">10</text>
+  <text x="276.5" y="209" text-anchor="middle" font-size="9" fill="#d1d5db">Year</text>
+  <defs><linearGradient id="gF59E0B" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F59E0B" stop-opacity="0.12"/><stop offset="100%" stop-color="#F59E0B" stop-opacity="0.01"/></linearGradient></defs>
+  <polygon points="58.0,168 58.0,156.7 101.7,150.9 145.4,150.9 189.1,150.9 232.8,126.9 276.5,73.1 320.2,49.1 363.9,49.1 407.6,49.1 451.3,49.1 495.0,43.3 495.0,168" fill="url(#gF59E0B)"/>
+  <polyline points="58.0,156.7 101.7,150.9 145.4,150.9 189.1,150.9 232.8,126.9 276.5,73.1 320.2,49.1 363.9,49.1 407.6,49.1 451.3,49.1 495.0,43.3" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="58.0" cy="156.7" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <text x="58.0" y="145.7" text-anchor="middle" font-size="8.5" font-weight="600" fill="#F59E0B">0.17x</text>
+  <circle cx="101.7" cy="150.9" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <circle cx="145.4" cy="150.9" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <circle cx="189.1" cy="150.9" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <text x="189.1" y="139.9" text-anchor="middle" font-size="8.5" font-weight="600" fill="#F59E0B">0.23x</text>
+  <circle cx="232.8" cy="126.9" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <circle cx="276.5" cy="73.1" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <text x="276.5" y="62.099999999999994" text-anchor="middle" font-size="8.5" font-weight="600" fill="#F59E0B">1.04x</text>
+  <circle cx="320.2" cy="49.1" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <text x="320.2" y="38.1" text-anchor="middle" font-size="8.5" font-weight="600" fill="#F59E0B">1.29x</text>
+  <circle cx="363.9" cy="49.1" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <circle cx="407.6" cy="49.1" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <circle cx="451.3" cy="49.1" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <text x="451.3" y="38.1" text-anchor="middle" font-size="8.5" font-weight="600" fill="#F59E0B">1.29x</text>
+  <circle cx="495.0" cy="43.3" r="3" fill="white" stroke="#F59E0B" stroke-width="1.8"/>
+  <text x="495.0" y="57.3" text-anchor="middle" font-size="8.5" font-weight="600" fill="#F59E0B">1.35x</text>
+</svg>

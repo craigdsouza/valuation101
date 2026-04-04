@@ -1,0 +1,56 @@
+---
+title: "Curve Shapes"
+sidebarTitle: "curve_shapes.py"
+description: "Six convergence curve types that control how forecast variables transition from current to terminal values over 10 years."
+---
+
+## Module: `lib/curve_shapes.py`
+
+Controls the shape of convergence for the four forecast variables (revenue growth, operating margin, sales-to-capital ratio, cost of capital) as they transition from current values to terminal/stable values over the 10-year projection period.
+
+## Why curves matter
+
+A linear fade from 50% revenue growth to 3% tells a very different story than an S-curve that holds high growth for 3 years before dropping sharply. The curve shape encodes your belief about *when* and *how quickly* a company's performance normalizes.
+
+## The six curve types
+
+| Curve | Shape | Best for |
+|-------|-------|----------|
+| `exponential_decay` | Fast initial decline, gradual tail | High-growth companies decelerating as market saturates |
+| `linear_fade` | Constant rate of change each year | Steady, predictable convergence |
+| `s_curve` | Flat early → rapid middle → flat late | Companies with a moat that delays competitive pressure |
+| `step_down` | Discrete drop at a specific year | Margin cliff events (e.g., patent expiry, contract loss) |
+| `delayed_deceleration` | Holds near start value, then drops | Companies with strong near-term visibility |
+| `stable` | No change — flat line | Already-mature companies where the variable doesn't move |
+
+## Key functions
+
+### `exponential_decay(start, end, n_years)`
+
+Generates an exponentially decaying series from `start` to `end` over `n_years`. The rate of change is fastest in year 1 and slows over time.
+
+### `s_curve(start, end, n_years, inflection=0.5)`
+
+Generates an S-shaped (logistic) transition. The `inflection` parameter (0–1) controls where the steepest part of the curve falls — 0.3 means rapid change early, 0.7 means the transition is delayed.
+
+### `linear_fade(start, end, n_years)`
+
+Generates a straight-line interpolation from `start` to `end`.
+
+### `step_down(start, end, n_years, step_year)`
+
+Holds at `start` until `step_year`, then drops to `end` and stays flat.
+
+### `delayed_deceleration(start, end, n_years, hold_years=3)`
+
+Holds near `start` for `hold_years`, then decays exponentially to `end`.
+
+### `stable(value, n_years)`
+
+Returns a flat series at the given `value` for all years.
+
+## How curves are selected
+
+In **Expert mode**, the user can choose a curve type for each variable. In **Feeling Lucky** mode, the plugin uses rule-based classification that considers the company's growth trajectory, industry norms, and the gap between current and target values. A future [LLM-based classifier](/skills/overview#experimental) is planned to incorporate narrative and competitive context.
+
+The `populate_curve_data.py` utility module takes a curve type, start value, end value, and year count, and generates the full 10-year schedule that feeds into the DCF engine.

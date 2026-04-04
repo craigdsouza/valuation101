@@ -20,13 +20,15 @@ At each phase, the plugin presents the available options with context:
 
 1. **Cost of capital method** — Detailed (bottom-up CAPM), Industry Average, or Distribution
 2. **ERP source** — manual input, country of incorporation, operating regions, or implied
-3. **Revenue growth rate** — with historical CAGR, analyst consensus, and industry median shown
-4. **Target operating margin** — with current margin, industry median, and percentile shown
-5. **Margin convergence year** — how quickly margins reach the target
-6. **Sales-to-capital ratio** — with industry benchmark shown
-7. **R&D capitalization** — whether to treat R&D as investment (adjusts EBIT and invested capital)
-8. **Operating lease conversion** — whether to convert leases to debt equivalents
-9. **Failure probability** — bond-rating-based or age-based corporate failure rate
+3. **Earnings guidance review** — extracted forward guidance from the latest earnings call, presented alongside LTM defaults for you to accept, modify, or reject
+4. **Revenue growth** — start value (year 1), end value (year 10 target), and convergence curve type (e.g., exponential decay, S-curve)
+5. **Operating margin** — start value, target margin, and convergence curve type
+6. **Sales-to-capital ratio** — start value, industry target, and convergence curve type
+7. **Cost of capital convergence** — initial WACC, terminal cost of capital, and curve type
+8. **R&D capitalization** — whether to treat R&D as investment (adjusts EBIT and invested capital)
+9. **Operating lease conversion** — whether to convert leases to debt equivalents
+10. **Failure probability** — bond-rating-based or age-based corporate failure rate
+11. **9 default assumption overrides** — terminal ROIC, NOL carryforward, reinvestment lag, tax convergence, risk-free rate override, terminal growth override, trapped cash
 
 ## Typical session time
 

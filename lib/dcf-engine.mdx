@@ -1,49 +1,73 @@
 ---
 title: "DCF Engine"
 sidebarTitle: "dcf_engine.py"
-description: "FCFF projection, terminal value calculation, and present value discounting."
+description: "FCFF projection, terminal value calculation, equity bridge, and present value discounting."
 ---
 
 ## Module: `lib/dcf_engine.py`
 
-The core computation engine for the FCFF valuation model.
+The core computation engine for the FCFF valuation model. Accepts pre-computed 10-year schedules from the [curve shapes library](/lib/curve-shapes) and produces a complete valuation.
 
-## Key functions
+## Key function
 
-### `project_fcff()`
+### `dcf_valuation()`
 
-Projects free cash flow to firm for years 1–10 plus the terminal year.
+The main entry point. Runs the full DCF: 10-year projection, terminal value, and equity bridge.
 
-**Parameters:**
-- `base_revenue` — LTM revenue (starting point)
-- `initial_growth_rate` — year 1 revenue growth rate
-- `stable_growth_rate` — terminal growth rate
-- `current_margin` — current operating margin
-- `target_margin` — target operating margin at convergence
-- `convergence_year` — year by which margin reaches target
-- `sales_to_capital` — revenue generated per dollar of reinvestment
-- `tax_rate` — marginal tax rate
+**Schedule inputs** (from [growth-and-profitability](/skills/growth-and-profitability) via [curve_shapes.py](/lib/curve-shapes)):
+- `growth_schedule` — 10-element list of revenue growth rates (year 1–10)
+- `margin_schedule` — 10-element list of operating margins (year 1–10)
+- `s2c_schedule` — 10-element list of sales-to-capital ratios (year 1–10)
+- `coc_schedule` — 10-element list of cost of capital rates (year 1–10)
 
-**Returns:** List of dictionaries, one per year, each containing revenue, EBIT, after-tax EBIT, reinvestment, and FCFF.
+**Base year financials** (from LTM):
+- `revenue`, `ebit`, `book_equity`, `book_debt`, `cash`
+- `minority_interests`, `non_operating_assets`
+- `shares_outstanding`, `stock_price`
+- `effective_tax_rate`, `marginal_tax_rate`, `riskfree_rate`
 
-### `terminal_value()`
+**Adjustment inputs** (optional):
+- `total_option_value`, `has_options` — from [employee-options](/skills/employee-options)
+- R&D and lease adjustment deltas — from [r-and-d-converter](/skills/r-and-d-converter) and [lease-converter](/skills/lease-converter)
 
-Computes the terminal value using the perpetuity growth model.
+**9 structural overrides** (default assumption toggles):
+- Terminal cost of capital, terminal ROIC, failure probability, reinvestment lag, tax convergence, NOL carryforward, risk-free rate override, growth rate override, trapped cash
 
-**Parameters:**
-- `terminal_fcff` — FCFF in the terminal year
-- `stable_wacc` — cost of capital at maturity
-- `stable_growth` — perpetuity growth rate
+**Returns:** Dictionary containing yearly projections (10 years + terminal), terminal value, PV of cash flows, equity bridge, value per share, stock price, and price-as-percentage-of-value.
 
-**Returns:** Terminal value (float).
+## How schedules flow through
 
-### `discount_to_present()`
+When schedules are provided, they take precedence over the legacy scalar inputs:
 
-Discounts projected FCFFs and terminal value to present value at WACC.
+```
+growth_schedule → Revenue growth rates (rows D26:M26)
+margin_schedule → Operating margins (rows D28:M28)
+s2c_schedule    → Sales-to-capital ratios (rows D35:M35)
+coc_schedule    → Cost of capital rates (rows D36:M36)
+```
 
-**Parameters:**
-- `projections` — list of annual FCFF values
-- `terminal_value` — terminal value
-- `wacc` — weighted average cost of capital
+If no schedules are provided, the engine falls back to linear interpolation from legacy scalar inputs (e.g., `revenue_growth_next_year`, `revenue_growth_years_2_5`). This ensures backward compatibility with older runs.
 
-**Returns:** Present value of firm (float).
+## Terminal value computation
+
+### `compute_terminal_growth_rate()`
+
+Priority: user growth override → user risk-free override → current risk-free rate.
+
+### `compute_terminal_cost_of_capital()`
+
+Priority: user stable CoC override → risk-free override + base ERP → current risk-free + base ERP.
+
+### `compute_terminal_tax_rate()`
+
+If tax convergence override is on, stays at effective tax rate. Otherwise converges to industry average effective tax rate (preferred) or marginal rate.
+
+### `compute_terminal_roic()`
+
+If override is on, uses user-specified ROIC. Otherwise ROIC converges to cost of capital (no excess returns in perpetuity).
+
+## Equity bridge
+
+### `equity_bridge()`
+
+Converts operating value to equity value per share. See [equity bridge documentation](/lib/equity-bridge) for the full walkthrough.

@@ -1,0 +1,43 @@
+---
+title: "Option Value"
+sidebarTitle: "option_value.py"
+description: "Dilution-adjusted Black-Scholes valuation for employee stock options."
+---
+
+## Module: `lib/option_value.py`
+
+Values outstanding employee stock options using a dilution-adjusted Black-Scholes model. The resulting value is subtracted from equity in the DCF equity bridge.
+
+## Why dilution adjustment matters
+
+Standard Black-Scholes assumes exercising one option doesn't affect the stock price. But when employees exercise millions of options, new shares are issued, diluting existing shareholders. The dilution-adjusted model accounts for this by reducing the per-option value based on the ratio of options to total shares.
+
+## Key functions
+
+### `option_value(stock_price, strike, maturity, volatility, risk_free, dividend_yield, shares, options_count)`
+
+Computes the total value of all outstanding employee options.
+
+**Parameters:**
+- `stock_price` — current market price per share
+- `strike` — weighted average exercise price
+- `maturity` — weighted average years to expiration
+- `volatility` — annualized stock price volatility (standard deviation)
+- `risk_free` — risk-free rate
+- `dividend_yield` — annual dividend yield
+- `shares` — shares outstanding (basic)
+- `options_count` — number of options outstanding
+
+**Returns:** Total option value (float) to subtract from equity.
+
+### `dilution_factor(shares, options_count)`
+
+Computes the dilution adjustment: `shares / (shares + options)`.
+
+### `black_scholes_call(S, K, T, r, sigma, q)`
+
+Standard Black-Scholes call option pricing (before dilution adjustment).
+
+## Data source
+
+Option data (count, weighted average strike, weighted average maturity) is extracted automatically during the [parse-raw-data-to-filings](/skills/parse-raw-data-to-filings) phase from XBRL tags and saved to `options_flag.json` in the ticker cache. If no option data is found in XBRL filings, the equity bridge skips the option deduction.

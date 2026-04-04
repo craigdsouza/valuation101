@@ -1,19 +1,47 @@
 ---
 title: "Adjustments"
-sidebarTitle: "adjustments.py"
+sidebarTitle: "rd_converter.py & lease_converter.py"
 description: "R&D capitalization and operating lease conversion for the DCF model."
 ---
 
-## Module: `lib/adjustments.py`
+## R&D capitalization: `lib/rd_converter.py`
 
-Handles the two main pre-valuation adjustments that Damodaran recommends.
-
-## Key functions
+Capitalizes R&D expenses from operating expenses into a research asset, adjusting EBIT and invested capital. This is Damodaran's standard treatment for companies where R&D is a true investment rather than a recurring cost.
 
 ### `capitalize_rd()`
 
-Capitalizes R&D expenses into a research asset over a specified amortization period. Returns adjusted EBIT, research asset value, and adjusted invested capital.
+**Parameters:**
+- `rd_expenses` — list of R&D expenses by year (most recent first, typically 3–10 years)
+- `amortization_life` — useful life of R&D in years (looked up by industry, typically 2–10 years)
+- `tax_rate` — marginal tax rate
 
-### `convert_leases()`
+**Returns:**
+- `research_asset` — capitalized value of unamortized R&D
+- `amortization` — current year's amortization expense
+- `ebit_adjustment` — add back R&D, subtract amortization (net effect on EBIT)
+- `tax_benefit` — tax shield on the R&D adjustment
 
-Converts operating lease commitments into a debt equivalent using the pre-tax cost of debt as the discount rate. Returns the lease debt, adjusted EBIT, and adjusted total debt.
+**Data source:** `rd_amortization_by_industry.json` provides the amortization life by Damodaran industry classification.
+
+---
+
+## Operating lease conversion: `lib/lease_converter.py`
+
+Converts operating lease commitments into a debt equivalent by computing the present value of future lease payments, then adjusts debt, EBIT, and invested capital accordingly.
+
+### `convert_operating_leases()`
+
+**Parameters:**
+- `lease_commitments` — future lease payments by year (years 1–5 + beyond year 5)
+- `lease_expense` — current year's operating lease expense
+- `pretax_cost_of_debt` — discount rate for lease obligations
+
+**Returns:**
+- `debt_value` — present value of lease commitments (added to debt)
+- `depreciation` — implied depreciation on the lease asset
+- `ebit_adjustment` — add back lease expense, subtract depreciation (net effect on EBIT)
+- `asset_value` — right-of-use asset to add to invested capital
+
+<Info>
+  The skill automatically checks whether leases are already capitalized under ASC 842 / IFRS 16. If so, no conversion is needed and the skill skips.
+</Info>

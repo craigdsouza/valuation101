@@ -1,23 +1,24 @@
 ---
 title: "Valuation101 — Value Any Company in a Conversation"
-description: "A conversational FCFF intrinsic valuation tool built on Aswath Damodaran's methodology. Talk to it; it does the math."
+description: "A conversational Discounted Cash Flow (DCF) intrinsic valuation tool that values companies using only free public domain data. Talk to the model; it does the math."
 ---
 
 <div className="hero-section">
 
-# Value any company in a conversation
+# What is Valuation101?
 
-Valuation101 is a Claude plugin that runs Damodaran's FCFF valuation model through natural conversation. It fetches SEC data, computes WACC, projects free cash flows, and returns an intrinsic value per share — all while explaining every step.
+Valuation101 is a Claude plugin that implements a DCF valuation through natural conversation. It follows the methodologies made famous by Aswath Damodaran, NYU's Dean of Valuation [1]. The plugin fetches financial data for the company being valued from the SEC, computes Cost of Capital, forecasts revenue and operating margins using earnings guidance, calculates free cash flows, and finally returns an intrinsic value per share — all while explaining every step.
 
+<h5></h5>
 <CardGroup cols={2}>
   <Card title="Get Started" icon="rocket" href="/docs/getting-started">
     Install the plugin and run your first valuation in under 5 minutes
   </Card>
-  <Card title="How It Works" icon="gears" href="/docs/how-it-works">
-    The 7-phase FCFF pipeline from ticker to intrinsic value
+  <Card title="Case Studies" icon="chart-line" href="/case-studies/case-study-guide">
+    Real completed company valuations with full breakdowns and commentary
   </Card>
-  <Card title="Skills Reference" icon="book" href="/skills/overview">
-    All 16 skills with inputs, outputs, and dependency graph
+  <Card title="How a Valuation is Performed" icon="gears" href="/docs/how-it-works">
+    The 8-phase FCFF pipeline from ticker to intrinsic value
   </Card>
   <Card title="Methodology" icon="graduation-cap" href="/docs/methodology">
     The academic framework behind every calculation
@@ -33,7 +34,7 @@ Valuation101 is a Claude plugin that runs Damodaran's FCFF valuation model throu
     Say "Value Apple" or "What's Tesla worth?" — the plugin identifies the company and fetches live SEC EDGAR data.
   </Step>
   <Step title="AI builds the model">
-    16 skills run in sequence: pulling XBRL data, computing trailing-twelve-month financials, estimating WACC, projecting growth, and running the DCF.
+    19 skills run in sequence: pulling data directly from the SEC, computing trailing-twelve-month financials, estimating Cost of Capital, projecting growth, and running the DCF.
   </Step>
   <Step title="Get your intrinsic value">
     You receive a value per share with a full breakdown — revenue projections, margin convergence, reinvestment rates, and terminal value. Every number is auditable.
@@ -43,19 +44,19 @@ Valuation101 is a Claude plugin that runs Damodaran's FCFF valuation model throu
 ## Built on Damodaran's methodology
 
 Every formula in this plugin maps directly to a cell in Aswath Damodaran's
-[fcffsimpleginzu spreadsheet](https://pages.stern.nyu.edu/~adamodar/). The math is implemented in a tested Python library, so calculations are deterministic and auditable — the AI handles the conversation, not the arithmetic.
+[fcffsimpleginzu spreadsheet](https://pages.stern.nyu.edu/~adamodar/pc/fcffsimpleginzu.xlsx). See his [video](https://youtu.be/kyKfJ_7-mdg?si=9fTj1FduHuST2Cc6) for clarification. The math is implemented in a tested Python library, so calculations are deterministic and auditable — the AI handles the conversation, and judgement regarding when to manually override a tool, it doesn't do the arithmetic.
 
 ## Three modes for every skill level
 
 <CardGroup cols={3}>
-  <Card title="Expert Mode" icon="microscope" href="/docs/expert-mode">
-    Full control over every assumption. You choose the ERP method, set growth rates, override industry averages.
+  <Card title="Feeling Lucky" icon="bolt" href="/docs/feeling-lucky">
+    One-click valuation using sensible defaults. Get an intrinsic value in ~2 minutes, then tweak.
   </Card>
   <Card title="Novice Mode" icon="seedling" href="/docs/novice-mode">
     Guided walkthrough with explanations at every step. Learn DCF valuation by doing one.
   </Card>
-  <Card title="Feeling Lucky" icon="bolt" href="/docs/feeling-lucky">
-    One-click valuation using sensible defaults. Get an intrinsic value in 60 seconds, then tweak.
+  <Card title="Expert Mode" icon="microscope" href="/docs/expert-mode">
+    Full control over every assumption. You choose the ERP method, set growth rates, override industry averages.
   </Card>
 </CardGroup>
 
@@ -64,9 +65,14 @@ Every formula in this plugin maps directly to a cell in Aswath Damodaran's
 This documentation is optimized for LLM consumption. Agents can access:
 
 - [`/llms.txt`](/llms.txt) — Curated index of all documentation pages
-- [`/llms-full.txt`](/llms-full.txt) — Complete docs concatenated into a single markdown file
 - Structured frontmatter on every skill page with machine-parseable `inputs`, `outputs`, and `depends_on` fields
 
 ## Follow along
 
 Weekly valuations, methodology deep-dives, and plugin updates on [Substack](https://valuation101.substack.com).
+
+<Warning>
+  **Disclaimer** — Valuation101 is not affiliated with, endorsed by, or connected to Aswath Damodaran or NYU Stern in any way. The plugin is built by an independent developer using Damodaran's publicly available spreadsheets and teachings as a foundation. 
+  
+  Where the plugin deviates from Damodaran's methodology — most notably in using S-curve convergence schedules rather than simple linear transitions for forecast variables — it does so in letter, not in spirit. The goal is always the same: arrive at a defensible intrinsic value through transparent, assumption-driven cash flow modelling.
+</Warning>

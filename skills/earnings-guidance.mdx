@@ -1,0 +1,101 @@
+---
+title: "Earnings Guidance"
+sidebarTitle: "Earnings Guidance"
+description: "Extract forward-looking management guidance from the most recent earnings call transcript to override LTM-derived defaults."
+---
+
+{/* Agent-parseable skill metadata
+skill_id: earnings-guidance
+phase: 5.5
+inputs: [ticker, statements_required, company identity]
+outputs: [guidance JSON (revenue year 1, revenue long-term, operating margin year 1, operating margin long-term)]
+depends_on: [cost-of-capital, identify-required-statements]
+feeds_into: [growth-and-profitability]
+*/}
+
+## What it does
+
+Fetches and parses the most recent earnings call transcript to extract management's forward-looking guidance on revenue and operating margins. When guidance is available, it provides a better starting point for DCF assumptions than extrapolating historical trends.
+
+This skill runs as **Phase 5.5** — after cost of capital and before growth & profitability. It is optional: if no transcript is found or no usable guidance is extracted, the pipeline proceeds with LTM-derived defaults.
+
+## Why earnings guidance matters
+
+Historical financials tell you where a company has been. Earnings guidance tells you where management expects it to go. For companies undergoing rapid change — high-growth tech, turnarounds, recent IPOs — the gap between past performance and forward expectations can be enormous.
+
+When management provides explicit guidance, the plugin uses the **conservative end of any range** as the default starting point, which the user can then adjust.
+
+## What it extracts
+
+The skill looks for guidance on four forecast variables:
+
+| Variable | Example guidance | How it's used |
+|----------|-----------------|---------------|
+| Revenue — Year 1 | "We expect FY2026 revenue of `$`12–13B" | Overrides the Year 1 revenue growth rate in the DCF |
+| Revenue — Long-term | "Exit run-rate of `$`17–19B" | Informs year 10 revenue growth target |
+| Operating margin — Year 1 | "Adjusted operating income of `$`900M–1.1B" | Overrides Year 1 margin assumption |
+| Operating margin — Long-term | "25–30% long-term margin target" | Overrides the Year 10 target margin |
+
+Two additional variables are stored for reference but not currently used in the pipeline:
+
+- **Sales-to-capital** — CapEx guidance, useful for cross-checking reinvestment assumptions
+- **Cost of capital** — refinancing commentary, interest rate improvements
+
+## How it works
+
+<Steps>
+  <Step title="Determine the expected earnings call">
+    From `statements_required`, identify the most recent filing by fiscal period end and map it to the corresponding earnings call quarter (e.g., 10-K with FY end 12/31/2025 → Q4-2025).
+  </Step>
+  <Step title="Check the cache">
+    Look for an existing `guidance-Q{N}-{YYYY}.json` in the ticker cache. If found, load and return it — no fetch needed.
+  </Step>
+  <Step title="Fetch the transcript">
+    Search for the transcript using a priority cascade: company IR website, Motley Fool, Investing.com, SEC 8-K exhibit. Fetches and filters the transcript to the most relevant 5,000–8,000 tokens (prepared remarks + forward-looking Q&A).
+  </Step>
+  <Step title="Extract structured guidance">
+    An LLM prompt extracts guidance for each variable, including raw quotes, inferred numerical values, inference method, and confidence rating.
+  </Step>
+  <Step title="Save to cache">
+    Two files are saved: a `.json` file (consumed by the pipeline) and a `.md` file (human-readable with raw quotes and reasoning).
+  </Step>
+</Steps>
+
+## Inference methods
+
+Management rarely says "our revenue will be exactly X." The skill handles several patterns of guidance:
+
+| Pattern | Example | Method |
+|---------|---------|--------|
+| Direct annual guidance | "Revenue of `$`12–13B for FY2026" | `direct_guidance` |
+| Growth rate applied | "Approximately 140% growth" | `growth_rate_applied` |
+| Exit run-rate | "Exit run-rate of `$`17–19B" + Q1 guidance | `exit_run_rate_interpolation` |
+| Quarterly sum | Per-quarter guidance that sums to annual | `quarterly_sum` |
+| Derived from adjusted OI | "Adj. operating income `$`900M–1.1B" ÷ revenue guidance | `derived_from_adj_oi_guidance` |
+| Direct margin percentage | "25–30% long-term margin target" | `direct_guidance` |
+
+Each extraction includes a confidence rating (high, medium, or low) so downstream skills can weight it appropriately.
+
+## Mode behavior
+
+| Mode | Behavior |
+|------|----------|
+| **Expert** | Presents extracted guidance alongside industry benchmarks. User can accept, modify, or reject each value. |
+| **Novice** | Presents guidance with explanations of what it means and how it was derived. |
+| **Feeling Lucky** | Runs silently — applies guidance automatically with no user interaction. |
+
+## Output
+
+Two files are saved per extraction to the ticker cache:
+
+- `guidance-Q{N}-{YYYY}.json` — structured data consumed by [growth-and-profitability](/skills/growth-and-profitability) and the [lucky pipeline](/lib/overview)
+- `guidance-Q{N}-{YYYY}.md` — annotated markdown with raw management quotes, inference reasoning, and confidence ratings
+
+## Edge cases
+
+| Scenario | Behavior |
+|----------|----------|
+| No transcript found | Logs a warning and returns `None`. Pipeline proceeds with LTM-only defaults. |
+| Transcript found but no revenue guidance | Saves JSON with null revenue values. LTM default is used. |
+| Guidance is adjusted (excludes SBC) | Flags the adjustment type. User can decide whether to use GAAP or adjusted figures. |
+| Low confidence extraction | Flagged in output. In Expert mode, user is asked to confirm. In Lucky mode, used but caveated in the transcript. |

@@ -1,12 +1,26 @@
 ---
-title: "How It Works"
-sidebarTitle: "How It Works"
-description: "The 7-phase FCFF pipeline from company name to intrinsic value per share."
+title: "How a Valuation is Performed"
+sidebarTitle: "How a Valuation is Performed"
+description: "The 8-phase FCFF pipeline from company name to intrinsic value per share."
 ---
+
+## How is it built?
+
+The plugin is a bundle of 19 skills backed by a deterministic Python library of 12 modules:
+
+- **Skills** handle the conversation — they know what to ask, when to fetch data, and how to present results. This includes fetching earnings call transcripts for management guidance, computing trailing financials, and generating case study write-ups.
+- **Python library** (`lib/`) handles the math — WACC computation, DCF projection, convergence curve shapes, terminal value, equity bridge, option valuation, and failure rate estimation
+- **Data pipeline** fetches live SEC EDGAR XBRL data, so valuations use real financial statements, not stale estimates
+
+<Info>
+  Every calculation is auditable. The plugin logs every input, intermediate value, and output to a run transcript so you can trace any number back to its source.
+</Info>
 
 ## The pipeline
 
-Valuation101 follows the same logical flow as Damodaran's fcffsimpleginzu spreadsheet, broken into 7 phases. Each phase is handled by one or more skills, and the output of each phase feeds into the next.
+Valuation101 follows the same logical flow as Damodaran's fcffsimpleginzu spreadsheet, broken into 8 phases. Each phase is handled by one or more skills, and the output of each phase feeds into the next.
+
+When running in Novice or Expert mode, Claude will ask for your inputs and in Lucky mode it blazes through all phases to produce an output.
 
 ```mermaid
 graph TD
@@ -14,7 +28,8 @@ graph TD
     P2 --> P3[Phase 3: Data Collection]
     P3 --> P4[Phase 4: Financial Assembly]
     P4 --> P5[Phase 5: Cost of Capital]
-    P5 --> P6[Phase 6: Growth & Profitability]
+    P5 --> P5b[Phase 5.5: Earnings Guidance]
+    P5b --> P6[Phase 6: Growth & Profitability]
     P6 --> P7[Phase 7: DCF Model]
     P7 --> OUT[Value per Share]
 ```
@@ -82,22 +97,40 @@ Also handles operating lease and R&D adjustments if applicable ([lease-converter
 
 ---
 
+## Phase 5.5: Earnings Guidance
+
+**Skill:** [earnings-guidance](/skills/earnings-guidance)
+
+Fetches the most recent earnings call transcript and extracts management's forward-looking guidance on revenue and operating margins. When available, this guidance overrides LTM-derived defaults in the next phase — giving the model a more informed starting point, especially for companies undergoing rapid change.
+
+The skill searches company IR pages, financial media, and SEC filings for transcripts, then uses structured LLM extraction to pull revenue (year 1 + long-term) and margin (year 1 + long-term) guidance with confidence ratings.
+
+**Output:** `guidance-Q{N}-{YYYY}.json` with structured guidance values and raw management quotes.
+
+<Info>
+  This phase is optional. If no transcript is found or no usable guidance is extracted, the pipeline proceeds with LTM-derived defaults in Phase 6.
+</Info>
+
+---
+
 ## Phase 6: Growth & Profitability
 
 **Skill:** [growth-and-profitability](/skills/growth-and-profitability)
 
-Collects the four key value-driver assumptions:
+Sets up the four forecast variables that drive the 10-year projection. For each variable, the skill determines a **start value** (year 1), an **end value** (year 10 target), and a **convergence curve** that controls the transition shape:
 
-| Assumption | What it controls |
-|------------|-----------------|
-| Revenue growth rate | Top-line trajectory over the high-growth period |
-| Target operating margin | Where EBIT margin converges by year 10 |
-| Margin convergence year | How quickly the margin transitions |
-| Sales-to-capital ratio | Reinvestment efficiency (revenue per dollar of invested capital) |
+| Variable | Start value | End value | Curve controls |
+|----------|-------------|-----------|----------------|
+| Revenue growth | LTM growth or earnings guidance | Industry 5-year average | How quickly growth decelerates |
+| Operating margin | LTM margin or earnings guidance | Industry average or guided target | How margins expand or compress |
+| Sales-to-capital ratio | Company's current ratio | Industry average | How reinvestment efficiency evolves |
+| Cost of capital | Initial WACC | Risk-free rate + ERP | How risk premium declines as company matures |
 
-Presents industry benchmarks and distribution statistics to help calibrate each assumption.
+The [curve shapes library](/lib/curve-shapes) offers six convergence types (exponential decay, S-curve, linear, rapid deceleration, delayed deceleration, step-down) to model how real companies evolve. When [earnings guidance](/skills/earnings-guidance) is available from Phase 5.5, it overrides LTM-derived start and end values.
 
-**Output:** The four assumptions that drive the 10-year FCFF projection.
+Industry benchmarks and distribution statistics are presented to help calibrate each assumption.
+
+**Output:** Four 10-year schedules (one per variable) plus curve metadata, fed directly into the DCF engine.
 
 ---
 
@@ -120,10 +153,11 @@ Optional adjustments via [employee-options](/skills/employee-options) and [failu
 
 ## After the model
 
-Two additional skills can run post-valuation:
+Three additional skills can run post-valuation:
 
 - [**diagnostics**](/skills/diagnostics) — Damodaran's 6-step sanity check: is the growth reasonable? Do the margins converge? Is reinvestment consistent with growth?
 - [**valuation-report**](/skills/valuation-report) — generates a formatted `.docx` report with all inputs, projections, and the equity bridge
+- [**case-study-generator**](/skills/case-study-generator) — generates a Mintlify MDX case study page with data tables, convergence charts, and narrative commentary for the docs site
 
 ## Next steps
 
@@ -131,7 +165,7 @@ Two additional skills can run post-valuation:
   <Card title="Skills Reference" icon="book" href="/skills/overview">
     Detailed documentation for every skill
   </Card>
-  <Card title="Data Pipeline" icon="database" href="/docs/data-pipeline">
+  <Card title="Data Handling" icon="database" href="/docs/data-pipeline">
     How SEC EDGAR data flows through the system
   </Card>
 </CardGroup>

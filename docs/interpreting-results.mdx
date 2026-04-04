@@ -6,32 +6,60 @@ description: "How to read, evaluate, and act on a Valuation101 output."
 
 ## The output at a glance
 
-After a valuation run, you receive:
+The main deliverable is an Excel workbook saved to your selected folder as `TICKER-valuation-YYYY-MM-DD-NNN.xlsx` (for example, `AAPL-valuation-2026-04-04-001.xlsx`). Open it to explore the full model — everything from raw financial data to the final value per share lives in this single file.
 
-- **Estimated value per share** — the headline intrinsic value
-- **Current market price** — for comparison
-- **Implied upside/downside** — percentage difference between intrinsic value and market price
-- **Full projection table** — 10-year revenue, EBIT, FCFF, and discount factors
-- **Equity bridge** — how operating value becomes equity value per share
-- **WACC breakdown** — cost of equity, cost of debt, and weights
+The workbook contains one primary sheet with the valuation output, a second with diagnostics, and the rest are supporting data sheets that feed into the model.
+
+### Valuation Output sheet
+
+This is the sheet you'll spend the most time in.
+
+| Section | What you'll find |
+|---------|-----------------|
+| **Assumptions** (top) | Base-year revenues and EBIT, tax rates, revenue growth, operating margin, sales-to-capital, and cost of capital — each with a start value, end value, and convergence curve |
+| **10-year projections** (middle) | Year-by-year revenue, EBIT, after-tax operating income, reinvestment, FCFF, and discount factors |
+| **Equity bridge** (bottom) | Operating asset value → subtract debt, minority interests, and option value → add cash and non-operating assets → equity value per share |
+| **Chart panel** (top-right) | Four convergence charts showing how revenue growth, operating margin, sales-to-capital, and cost of capital transition from year 1 to year 10 |
+
+### Diagnostics sheet
+
+The diagnostics sheet runs Damodaran's 6-step sanity check — stable growth reasonableness, ROIC vs. cost of capital, reinvestment consistency, terminal value as a percentage of total value, and more. This is the quickest way to spot red flags before trusting the headline number.
+
+### Supporting sheets
+
+| Sheet | Purpose |
+|-------|---------|
+| **Validation** | Trailing 12-month financials from SEC XBRL filings with cross-checks against the prior-year 10-K |
+| **Cost of Capital** | Full WACC build-up — beta, equity risk premium, cost of equity, synthetic credit rating, cost of debt, and weights |
+| **CurveData** | Hidden sheet with pre-computed alpha coefficients that power the convergence curves |
+| **IndustryAvg_US** | ~97 US industry benchmarks (margins, ROIC, growth, leverage, multiples) |
+| **IndustryAvg_Global** | Same structure for global industries |
+| **CountryERP** | Equity risk premiums for ~190 countries |
+| **SyntheticRating** | Interest coverage → credit rating lookup tables for estimating cost of debt |
+
+The chat will also surface the headline numbers — estimated value per share, current market price, and implied upside or downside — so you can see the result without opening the file.
 
 ## What to look for
 
+### Are the convergence curves realistic?
+
+Each forecast variable transitions from its year 1 value to a year 10 target using a [convergence curve](/lib/curve-shapes). Check that the curve shapes tell a plausible story. An **exponential decay** on revenue growth implies rapid deceleration — sensible for a hyper-growth company. An **S-curve** on operating margins implies a moat-protected period before convergence begins. If the curves look wrong, the year-by-year projections will be off even if the start and end values are reasonable.
+
 ### Is the growth rate reasonable?
 
-Compare the projected revenue CAGR against the company's historical growth and the industry average. A 25% growth rate for a mature utility company should raise flags; the same rate for a high-growth SaaS company might be conservative.
+Compare the year 1 revenue growth rate and the year 10 target against the company's historical growth and the industry average. A 25% year 1 growth rate for a mature utility company should raise flags; the same rate for a high-growth SaaS company might be conservative.
 
 ### Do margins converge sensibly?
 
-The model transitions current operating margins to a target margin over the projection period. Check that the target margin is realistic for the industry and that the convergence path makes sense.
+The model transitions current operating margins to a target margin over 10 years via the selected curve. Check that the target margin is realistic for the industry and that the convergence path makes sense — early-stage companies may need an S-curve (delayed expansion), while a company at peak margins may need exponential decay.
 
 ### Is reinvestment consistent with growth?
 
-The sales-to-capital ratio determines how much the company must reinvest to grow. Higher growth requires more reinvestment. If the model shows high growth with low reinvestment, the value may be overstated.
+The sales-to-capital schedule determines how much the company must reinvest to grow, and how that efficiency changes over time. If year 1 shows high growth with a very high S/C ratio (low reinvestment per dollar of growth), the value may be overstated. Compare the S/C convergence target against the industry average.
 
 ### Does the terminal value dominate?
 
-In a well-calibrated DCF, the terminal value typically accounts for 50–70% of total firm value. If it's above 85%, the valuation is essentially a bet on what happens after year 10 — consider shortening the high-growth period or increasing near-term cash flows.
+In a well-calibrated DCF, the terminal value typically accounts for 50–70% of total firm value. If it's above 85%, the valuation is essentially a bet on what happens after year 10 — consider adjusting the curve shapes to shift more value into the projection period.
 
 ## Damodaran's diagnostic checklist
 
@@ -44,5 +72,5 @@ The [diagnostics](/skills/diagnostics) skill runs 6 automated checks on every va
 - **Precision** — treat the output as a range, not a point estimate. Small changes in WACC or growth can shift the value by 20–30%
 
 <Tip>
-  Run the valuation twice with different assumptions (optimistic and pessimistic) to get a sense of the range. The difference between the two tells you how sensitive the valuation is.
+  Run the valuation twice with different assumptions (optimistic and pessimistic) to get a range rather than a point estimate
 </Tip>
