@@ -2,10 +2,18 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Valuation101",
   "theme": "mint",
+  "custom": {
+    "css": "/custom.css"
+  },
   "colors": {
-    "primary": "#1E40AF",
-    "light": "#3B82F6",
+    "primary": "#f7921e",
+    "light": "#fff8db",
     "dark": "#1E3A8A"
+  },
+  "background": {
+    "color": {
+      "light": "#fff8db"
+    }
   },
   "logo": {
     "light": "/logo/light.svg",
